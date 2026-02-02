@@ -103,6 +103,42 @@ def get_db_connection():
 def index():
     return render_template('index.html')
 
+@app.route('/hazard')
+def hazard_dashboard():
+    return render_template('index.html')
+
+@app.route('/admin/rfid')
+def admin_rfid_protected():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    conn = get_db_connection()
+    
+    # Get recent RFID logs
+    logs = conn.execute('''
+        SELECT * FROM rfid_logs 
+        ORDER BY scan_timestamp DESC 
+        LIMIT 100
+    ''').fetchall()
+    
+    # Get all teacher pins
+    pins = conn.execute('''
+        SELECT * FROM teacher_pins 
+        ORDER BY created_at DESC
+    ''').fetchall()
+    
+    # Get statistics
+    stats = {
+        'total_scans': conn.execute('SELECT COUNT(*) FROM rfid_logs').fetchone()[0],
+        'today_scans': conn.execute('SELECT COUNT(*) FROM rfid_logs WHERE DATE(scan_timestamp) = DATE("now")').fetchone()[0],
+        'teacher_scans': conn.execute('SELECT COUNT(*) FROM rfid_logs WHERE user_type = "teacher"').fetchone()[0],
+        'student_scans': conn.execute('SELECT COUNT(*) FROM rfid_logs WHERE user_type = "student"').fetchone()[0]
+    }
+    
+    conn.close()
+    
+    return render_template('admin_rfid_dashboard.html', logs=logs, pins=pins, stats=stats)
+
 @app.route('/history')
 def history():
     conn = get_db_connection()
