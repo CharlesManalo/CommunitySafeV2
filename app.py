@@ -101,11 +101,16 @@ def get_db_connection():
 # Routes
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return send_from_directory('static/rfid', 'index.html')
 
 @app.route('/hazard')
 def hazard_dashboard():
     return render_template('index.html')
+
+# Serve RFID static assets
+@app.route('/assets/<path:filename>')
+def serve_rfid_assets(filename):
+    return send_from_directory('static/rfid/assets', filename)
 
 @app.route('/admin/rfid')
 def admin_rfid_protected():

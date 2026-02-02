@@ -1,16 +1,21 @@
-import { motion } from 'framer-motion';
-import { useAuthStore } from '@/store/authStore';
-import { GraduationCap, UserCog, Shield } from 'lucide-react';
+import { motion } from "framer-motion";
+import { useAuthStore } from "@/store/authStore";
+import { GraduationCap, UserCog, Shield } from "lucide-react";
 
 export function LandingPage() {
-  const { setUserType } = useAuthStore();
+  const { setUserType, setPinVerified, setTeacherPin, setTeacherName } =
+    useAuthStore();
 
   const handleStudentClick = () => {
-    setUserType('student');
+    setUserType("student");
   };
 
   const handleTeacherClick = () => {
-    setUserType('teacher');
+    // Reset PIN state when teacher is selected
+    setPinVerified(false);
+    setTeacherPin("");
+    setTeacherName(null);
+    setUserType("teacher");
   };
 
   return (
@@ -28,9 +33,7 @@ export function LandingPage() {
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent mb-3">
           Prove You're Human
         </h1>
-        <p className="text-slate-400 text-lg">
-          Select your role to continue
-        </p>
+        <p className="text-slate-400 text-lg">Select your role to continue</p>
       </motion.div>
 
       {/* Role Selection Cards */}
@@ -54,7 +57,7 @@ export function LandingPage() {
                 Scan your ID card to verify access
               </p>
             </div>
-            
+
             {/* Hover glow effect */}
             <div className="absolute inset-0 rounded-2xl bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
@@ -74,12 +77,14 @@ export function LandingPage() {
               <div className="w-20 h-20 rounded-full bg-purple-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                 <UserCog className="w-10 h-10 text-purple-400" />
               </div>
-              <h2 className="text-2xl font-bold text-purple-100 mb-2">Teacher</h2>
+              <h2 className="text-2xl font-bold text-purple-100 mb-2">
+                Teacher
+              </h2>
               <p className="text-purple-300/70 text-sm text-center">
-                Enter PIN and scan your ID card
+                Enter 4-digit PIN to access reporting system
               </p>
             </div>
-            
+
             {/* Hover glow effect */}
             <div className="absolute inset-0 rounded-2xl bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>

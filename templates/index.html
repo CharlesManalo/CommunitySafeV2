@@ -55,19 +55,60 @@
         <!-- Location Section -->
         <div class="location-section">
           <h2>📍 Location</h2>
-          <div class="location-controls">
-            <button id="get-location" class="btn btn-primary">
-              Get My Location
-            </button>
+
+          <!-- Google Map -->
+          <div class="map-container">
+            <iframe
+              id="google-map"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15526.022196521722!2d121.1826176!3d13.3809924!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sph!4v1770049480412!5m2!1sen!2sph"
+              width="100%"
+              height="400"
+              style="border: 0; border-radius: 8px"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              class="map-frame"
+            >
+            </iframe>
+            <div class="map-instructions">
+              <p>📍 Click on the map to mark the exact hazard location</p>
+            </div>
           </div>
-          <div id="location-info" class="location-info" style="display: none">
-            <p><strong>Latitude:</strong> <span id="latitude"></span></p>
-            <p><strong>Longitude:</strong> <span id="longitude"></span></p>
-            <p class="text-success">✅ Location captured</p>
+
+          <!-- Location Details -->
+          <div class="location-details">
+            <div class="location-coordinates">
+              <p><strong>Latitude:</strong> <span id="latitude">--</span></p>
+              <p><strong>Longitude:</strong> <span id="longitude">--</span></p>
+            </div>
+
+            <div class="location-address">
+              <label for="location-details" class="required">
+                <strong>Location Details *</strong>
+              </label>
+              <input
+                type="text"
+                id="location-details"
+                placeholder="e.g., BLDG Rizal, 2nd Floor, Room 201"
+                class="location-input"
+                required
+              />
+              <small class="input-hint"
+                >Please provide specific building/room details</small
+              >
+            </div>
+          </div>
+
+          <div
+            id="location-status"
+            class="location-status"
+            style="display: none"
+          >
+            <p class="text-success">✅ Location marked on map</p>
           </div>
           <div id="location-error" class="error-message" style="display: none">
             <p class="text-error">
-              ❌ Unable to get location. Please enable location services.
+              ❌ Please mark location on map and provide details
             </p>
           </div>
         </div>
@@ -110,7 +151,7 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/location.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/map-location.js') }}"></script>
     <script>
       // Report submission handler
       document
@@ -121,15 +162,22 @@
 
           // Validate all required fields
           const capturedImage = document.getElementById("captured-image").src;
-          const latitude = document.getElementById("latitude").textContent;
-          const longitude = document.getElementById("longitude").textContent;
-          const description = document
-            .getElementById("hazard-description")
-            .value.trim();
+          const latitude = document.getElementById("latitude-field")?.value;
+          const longitude = document.getElementById("longitude-field")?.value;
+          const locationDetails =
+            document.getElementById("location-details")?.value;
+          const description =
+            document.getElementById("hazard-description").value;
 
-          if (!capturedImage || !latitude || !longitude || !description) {
+          if (
+            !capturedImage ||
+            !latitude ||
+            !longitude ||
+            !locationDetails ||
+            !description
+          ) {
             statusDiv.innerHTML =
-              '<p class="text-error">❌ Please complete all fields</p>';
+              '<p style="color: #dc3545;">❌ Please complete all required fields: photo, map location, location details, and description</p>';
             return;
           }
 
@@ -138,7 +186,7 @@
             before_image: capturedImage,
             latitude: parseFloat(latitude),
             longitude: parseFloat(longitude),
-            description: description,
+            description: description + "\n\nLocation: " + locationDetails,
           };
 
           // Show loading state
@@ -187,10 +235,10 @@
         document.getElementById("captured-image-preview").style.display =
           "none";
 
-        // Reset location
-        document.getElementById("location-info").style.display = "none";
-        document.getElementById("latitude").textContent = "";
-        document.getElementById("longitude").textContent = "";
+        // Reset location using map manager
+        if (window.mapLocationManager) {
+          window.mapLocationManager.clearLocation();
+        }
 
         // Reset description
         document.getElementById("hazard-description").value = "";
@@ -209,14 +257,18 @@
       // Enable submit button when all fields are filled
       function checkFormComplete() {
         const capturedImage = document.getElementById("captured-image").src;
-        const latitude = document.getElementById("latitude").textContent;
-        const longitude = document.getElementById("longitude").textContent;
-        const description = document
-          .getElementById("hazard-description")
-          .value.trim();
+        const latitude = document.getElementById("latitude-field")?.value;
+        const longitude = document.getElementById("longitude-field")?.value;
+        const locationDetails =
+          document.getElementById("location-details")?.value;
+        const description = document.getElementById("hazard-description").value;
 
         const isComplete =
-          capturedImage && latitude && longitude && description;
+          capturedImage &&
+          latitude &&
+          longitude &&
+          locationDetails &&
+          description;
         document.getElementById("submit-report").disabled = !isComplete;
       }
 
@@ -224,6 +276,12 @@
       document
         .getElementById("hazard-description")
         .addEventListener("input", checkFormComplete);
+
+      // Add location details listener
+      const locationDetailsInput = document.getElementById("location-details");
+      if (locationDetailsInput) {
+        locationDetailsInput.addEventListener("input", checkFormComplete);
+      }
 
       // Initialize form check
       checkFormComplete();

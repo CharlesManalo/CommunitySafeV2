@@ -1,15 +1,14 @@
-import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAuthStore } from '@/store/authStore';
-import { ArrowLeft, Lock, AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
-
-const VALID_PINS = ['1234', '5678', '9012', '3456', '7890'];
+import { useState, useRef, useEffect, type KeyboardEvent } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useAuthStore } from "@/store/authStore";
+import { ArrowLeft, Lock, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
 export function PinEntry() {
-  const { setUserType, setTeacherPin, setPinVerified, setTeacherName } = useAuthStore();
-  const [pin, setPin] = useState(['', '', '', '']);
-  const [error, setError] = useState('');
+  const { setUserType, setTeacherPin, setPinVerified, setTeacherName } =
+    useAuthStore();
+  const [pin, setPin] = useState(["", "", "", ""]);
+  const [error, setError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -20,8 +19,8 @@ export function PinEntry() {
 
   const handleBack = () => {
     setUserType(null);
-    setPin(['', '', '', '']);
-    setError('');
+    setPin(["", "", "", ""]);
+    setError("");
   };
 
   const handleInputChange = (index: number, value: string) => {
@@ -30,11 +29,11 @@ export function PinEntry() {
 
     // Limit to single digit
     const digit = value.slice(-1);
-    
+
     const newPin = [...pin];
     newPin[index] = digit;
     setPin(newPin);
-    setError('');
+    setError("");
 
     // Auto-focus next input if digit entered
     if (digit && index < 3) {
@@ -43,59 +42,79 @@ export function PinEntry() {
 
     // Auto-verify when all digits entered
     if (index === 3 && digit) {
-      const fullPin = [...newPin.slice(0, 3), digit].join('');
+      const fullPin = [...newPin.slice(0, 3), digit].join("");
       verifyPin(fullPin);
     }
   };
 
   const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
     // Handle backspace
-    if (e.key === 'Backspace') {
+    if (e.key === "Backspace") {
       if (!pin[index] && index > 0) {
         // Move to previous input if current is empty
         const newPin = [...pin];
-        newPin[index - 1] = '';
+        newPin[index - 1] = "";
         setPin(newPin);
         inputRefs.current[index - 1]?.focus();
       } else {
         // Clear current input
         const newPin = [...pin];
-        newPin[index] = '';
+        newPin[index] = "";
         setPin(newPin);
       }
     }
 
     // Handle arrow keys
-    if (e.key === 'ArrowLeft' && index > 0) {
+    if (e.key === "ArrowLeft" && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
-    if (e.key === 'ArrowRight' && index < 3) {
+    if (e.key === "ArrowRight" && index < 3) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
   const verifyPin = async (fullPin: string) => {
     setIsVerifying(true);
-    
-    // Simulate API verification delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    if (VALID_PINS.includes(fullPin)) {
-      setTeacherPin(fullPin);
-      setTeacherName(`Teacher ${fullPin}`);
-      setPinVerified(true);
-      toast.success('PIN verified successfully');
-    } else {
-      setError('Invalid PIN. Please try again.');
-      setPin(['', '', '', '']);
+
+    try {
+      // Call API to verify PIN
+      const response = await fetch("/api/rfid/verify-pin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pin: fullPin }),
+      });
+
+      const data = await response.json();
+
+      if (data.valid) {
+        setTeacherPin(fullPin);
+        setTeacherName(data.teacher_name);
+        setPinVerified(true);
+        toast.success("PIN verified successfully");
+
+        // Redirect to hazard reporting site for teachers
+        setTimeout(() => {
+          window.location.href = "/hazard";
+        }, 1000);
+      } else {
+        setError("Invalid PIN. Please try again.");
+        setPin(["", "", "", ""]);
+        inputRefs.current[0]?.focus();
+        toast.error("Invalid PIN");
+      }
+    } catch (error) {
+      setError("Verification failed. Please try again.");
+      setPin(["", "", "", ""]);
       inputRefs.current[0]?.focus();
-      toast.error('Invalid PIN');
+      toast.error("Verification failed");
     }
-    
+
     setIsVerifying(false);
   };
 
-  const filledCount = pin.filter(d => d !== '').length;
+  const filledCount = pin.filter((d) => d !== "").length;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8">
@@ -123,9 +142,7 @@ export function PinEntry() {
         <h1 className="text-3xl font-bold text-white mb-2">
           Enter Teacher PIN
         </h1>
-        <p className="text-slate-400">
-          Please enter your 4-digit access code
-        </p>
+        <p className="text-slate-400">Please enter your 4-digit access code</p>
       </motion.div>
 
       {/* PIN Input */}
@@ -141,7 +158,9 @@ export function PinEntry() {
             {pin.map((digit, index) => (
               <div key={index} className="relative">
                 <input
-                  ref={(el) => { inputRefs.current[index] = el; }}
+                  ref={(el) => {
+                    inputRefs.current[index] = el;
+                  }}
                   type="password"
                   inputMode="numeric"
                   maxLength={1}
@@ -153,9 +172,9 @@ export function PinEntry() {
                     w-14 h-16 text-2xl font-bold text-center rounded-xl
                     bg-slate-900 border-2 transition-all duration-200
                     focus:outline-none focus:ring-2 focus:ring-purple-500/50
-                    ${digit ? 'border-purple-500 text-purple-300' : 'border-slate-600 text-white'}
-                    ${error ? 'border-red-500/50' : ''}
-                    ${isVerifying ? 'opacity-50' : ''}
+                    ${digit ? "border-purple-500 text-purple-300" : "border-slate-600 text-white"}
+                    ${error ? "border-red-500/50" : ""}
+                    ${isVerifying ? "opacity-50" : ""}
                   `}
                 />
               </div>
@@ -169,7 +188,7 @@ export function PinEntry() {
                 key={i}
                 className={`
                   w-2 h-2 rounded-full transition-all duration-300
-                  ${i < filledCount ? 'bg-purple-500 w-4' : 'bg-slate-600'}
+                  ${i < filledCount ? "bg-purple-500 w-4" : "bg-slate-600"}
                 `}
               />
             ))}
