@@ -333,6 +333,28 @@ def verify_teacher_pin():
         conn.close()
         
         if pin_record:
+            # Log teacher PIN authentication to RFID logs
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO rfid_logs 
+                    (user_type, card_id, card_data, teacher_pin, ip_address, user_agent, is_verified)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    'teacher',
+                    'PIN_AUTH',
+                    f'Teacher PIN authentication via {pin_record["teacher_name"]}',
+                    pin,
+                    request.remote_addr,
+                    request.headers.get('User-Agent', ''),
+                    True
+                ))
+                conn.commit()
+                conn.close()
+            except Exception as log_error:
+                app.logger.error(f'Error logging teacher PIN: {str(log_error)}')
+            
             return jsonify({
                 'valid': True,
                 'teacher_name': pin_record['teacher_name'],
@@ -366,7 +388,7 @@ def log_rfid_scan():
             INSERT INTO rfid_logs 
             (user_type, card_id, card_data, teacher_pin, ip_address, user_agent, is_verified)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (user_type, card_id, card_data, teacher_pin, ip_address, user_agent, 1))
+        ''', (user_type, card_id, card_data, teacher_pin, ip_address, user_agent, True))
         
         log_id = cursor.lastrowid
         conn.commit()

@@ -12,8 +12,18 @@
   <body>
     <div class="container">
       <header>
-        <h1>🔐 Admin Login</h1>
-        <p>Secure access to hazard management</p>
+        <div class="logo-container">
+          <img
+            src="{{ url_for('static', filename='images/school-logo.png') }}"
+            alt="School Logo"
+            class="school-logo"
+            onerror="this.style.display = 'none'"
+          />
+          <div>
+            <h1>Admin Login</h1>
+            <p>Secure access to hazard management</p>
+          </div>
+        </div>
       </header>
 
       <div class="login-form-container">
