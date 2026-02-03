@@ -101,7 +101,11 @@ def get_db_connection():
 # Routes
 @app.route('/')
 def index():
-    return send_from_directory('static/rfid', 'index.html')
+    return send_from_directory('static/rfid', 'RFID.html')
+
+@app.route('/RFID.html')
+def rfid_direct():
+    return send_from_directory('static/rfid', 'RFID.html')
 
 @app.route('/hazard')
 def hazard_dashboard():
