@@ -89,6 +89,20 @@ def init_db():
         )
     ''')
     
+    # Create feedback table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            user_type TEXT NOT NULL,
+            category TEXT NOT NULL,
+            message TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            is_read INTEGER DEFAULT 0
+        )
+    ''')
+    
     conn.commit()
     conn.close()
 
@@ -157,6 +171,58 @@ def history():
     ''').fetchall()
     conn.close()
     return render_template('history.html', reports=reports)
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        user_type = request.form.get('user_type')
+        category = request.form.get('category')
+        message = request.form.get('message')
+        
+        if not all([name, email, user_type, category, message]):
+            flash('Please fill in all fields.', 'error')
+            return redirect(url_for('feedback'))
+        
+        conn = get_db_connection()
+        conn.execute('''
+            INSERT INTO feedback (name, email, user_type, category, message)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (name, email, user_type, category, message))
+        conn.commit()
+        conn.close()
+        
+        flash('Thank you for your feedback!', 'success')
+        return redirect(url_for('feedback'))
+    
+    return render_template('feedback.html')
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+        
+        if not all([name, email, subject, message]):
+            flash('Please fill in all fields.', 'error')
+            return redirect(url_for('contact'))
+        
+        # Store contact message as feedback with category 'contact'
+        conn = get_db_connection()
+        conn.execute('''
+            INSERT INTO feedback (name, email, user_type, category, message)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (name, email, 'contact', 'Contact Form', f"Subject: {subject}\n\n{message}"))
+        conn.commit()
+        conn.close()
+        
+        flash('Thank you for contacting us! We will get back to you soon.', 'success')
+        return redirect(url_for('contact'))
+    
+    return render_template('contact.html')
 
 @app.route('/api/report', methods=['POST'])
 def report_hazard():

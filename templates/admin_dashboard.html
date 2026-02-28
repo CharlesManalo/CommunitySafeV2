@@ -8,24 +8,183 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/cardnav.css') }}"
+    />
   </head>
   <body>
+    <!-- CardNav Header -->
+    <div class="card-nav-container">
+      <nav id="cardNav" class="card-nav">
+        <div class="card-nav-top">
+          <div
+            class="hamburger-menu"
+            id="hamburgerMenu"
+            role="button"
+            aria-label="Open menu"
+            tabindex="0"
+          >
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+          </div>
+
+          <div class="logo-container">
+            <img
+              src="{{ url_for('static', filename='images/school-logo.png') }}"
+              alt="OMNHS Logo"
+              class="logo"
+              onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/omnhs-logo.png') }}';"
+            />
+          </div>
+
+          <a
+            href="{{ url_for('admin_logout') }}"
+            class="card-nav-cta-button"
+            style="background-color: #dc3545"
+            >Logout</a
+          >
+        </div>
+
+        <div class="card-nav-content" id="cardNavContent" aria-hidden="true">
+          <div class="nav-card" style="background-color: #0d0716; color: #fff">
+            <div class="nav-card-label">Navigation</div>
+            <div class="nav-card-links">
+              <a
+                class="nav-card-link"
+                href="{{ url_for('hazard_dashboard') }}"
+                aria-label="Report a hazard"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                Report Hazard
+              </a>
+              <a
+                class="nav-card-link"
+                href="{{ url_for('history') }}"
+                aria-label="View report history"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                View History
+              </a>
+            </div>
+          </div>
+
+          <div class="nav-card" style="background-color: #170d27; color: #fff">
+            <div class="nav-card-label">Admin</div>
+            <div class="nav-card-links">
+              <a
+                class="nav-card-link"
+                href="{{ url_for('admin_rfid_protected') }}"
+                aria-label="RFID dashboard"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                RFID Dashboard
+              </a>
+              <a
+                class="nav-card-link"
+                href="{{ url_for('admin_dashboard') }}"
+                aria-label="Admin dashboard"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                Dashboard
+              </a>
+            </div>
+          </div>
+
+          <div class="nav-card" style="background-color: #271e37; color: #fff">
+            <div class="nav-card-label">Help</div>
+            <div class="nav-card-links">
+              <a
+                class="nav-card-link"
+                href="{{ url_for('feedback') }}"
+                aria-label="Send feedback"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                Feedback
+              </a>
+              <a
+                class="nav-card-link"
+                href="{{ url_for('contact') }}"
+                aria-label="Contact support"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                Contact
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div style="height: 100px"></div>
+
     <div class="container">
       <header class="admin-header">
         <div class="admin-header-content">
           <h1>⚙️ Hazard Admin Dashboard</h1>
           <div class="admin-actions">
-            <a
-              href="{{ url_for('admin_rfid_protected') }}"
-              class="btn btn-primary"
-              style="margin-right: 10px"
-              >📡 RFID Dashboard</a
-            >
             <span class="admin-welcome"
               >Welcome, {{ session.admin_username }}</span
-            >
-            <a href="{{ url_for('admin_logout') }}" class="btn btn-logout"
-              >Logout</a
             >
           </div>
         </div>
@@ -402,6 +561,38 @@
             closeResolutionModal();
           }
         });
+
+      // CardNav Menu Functionality
+      const hamburgerMenu = document.getElementById("hamburgerMenu");
+      const cardNav = document.getElementById("cardNav");
+      const cardNavContent = document.getElementById("cardNavContent");
+      let isExpanded = false;
+
+      function toggleMenu() {
+        isExpanded = !isExpanded;
+
+        if (isExpanded) {
+          hamburgerMenu.classList.add("open");
+          cardNav.classList.add("open");
+          cardNavContent.setAttribute("aria-hidden", "false");
+          hamburgerMenu.setAttribute("aria-label", "Close menu");
+        } else {
+          hamburgerMenu.classList.remove("open");
+          cardNav.classList.remove("open");
+          cardNavContent.setAttribute("aria-hidden", "true");
+          hamburgerMenu.setAttribute("aria-label", "Open menu");
+        }
+      }
+
+      hamburgerMenu.addEventListener("click", toggleMenu);
+
+      // Keyboard accessibility
+      hamburgerMenu.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleMenu();
+        }
+      });
     </script>
   </body>
 </html>

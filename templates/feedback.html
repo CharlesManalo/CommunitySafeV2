@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feedback - CommunitySafe</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cardnav.css') }}" />
+    <style>
+      .feedback-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .feedback-form {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+      }
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        font-family: inherit;
+      }
+      .form-group textarea {
+        min-height: 150px;
+        resize: vertical;
+      }
+      .submit-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+        transition: background 0.3s ease;
+      }
+      .submit-btn:hover {
+        background: #5a6fd8;
+      }
+      .success-message {
+        background: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- CardNav Header -->
+    <div class="card-nav-container">
+      <nav id="cardNav" class="card-nav">
+        <div class="card-nav-top">
+          <div class="hamburger-menu" id="hamburgerMenu" role="button" aria-label="Open menu" tabindex="0">
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+          </div>
+          <div class="logo-container">
+            <img src="{{ url_for('static', filename='images/school-logo.png') }}" alt="OMNHS Logo" class="logo" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/omnhs-logo.png') }}';" />
+          </div>
+          <div style="width: 100px;"></div>
+        </div>
+        <div class="card-nav-content" id="cardNavContent" aria-hidden="true">
+          <div class="nav-card" style="background-color: #0D0716; color: #fff;">
+            <div class="nav-card-label">Navigation</div>
+            <div class="nav-card-links">
+              <a class="nav-card-link" href="{{ url_for('hazard_dashboard') }}">Report Hazard</a>
+              <a class="nav-card-link" href="{{ url_for('history') }}">View History</a>
+            </div>
+          </div>
+          <div class="nav-card" style="background-color: #170D27; color: #fff;">
+            <div class="nav-card-label">Admin</div>
+            <div class="nav-card-links">
+              <a class="nav-card-link" href="{{ url_for('admin_login') }}">Admin Login</a>
+              <a class="nav-card-link" href="{{ url_for('admin_rfid_protected') }}">RFID Dashboard</a>
+            </div>
+          </div>
+          <div class="nav-card" style="background-color: #271E37; color: #fff;">
+            <div class="nav-card-label">Help</div>
+            <div class="nav-card-links">
+              <a class="nav-card-link" href="{{ url_for('feedback') }}">Feedback</a>
+              <a class="nav-card-link" href="{{ url_for('contact') }}">Contact</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div style="height: 100px;"></div>
+
+    <div class="feedback-container">
+      <h1 style="text-align: center; margin-bottom: 10px;">💬 Send Feedback</h1>
+      <p style="text-align: center; color: #666; margin-bottom: 30px;">Help us improve CommunitySafe</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="{{ category }}-message">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form class="feedback-form" method="POST" action="{{ url_for('feedback') }}">
+        <div class="form-group">
+          <label for="name">Your Name *</label>
+          <input type="text" id="name" name="name" required placeholder="Enter your name">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" name="email" required placeholder="Enter your email">
+        </div>
+
+        <div class="form-group">
+          <label for="user_type">I am a *</label>
+          <select id="user_type" name="user_type" required>
+            <option value="">Select user type</option>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+            <option value="admin">Admin</option>
+            <option value="visitor">Visitor</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Feedback Category *</label>
+          <select id="category" name="category" required>
+            <option value="">Select category</option>
+            <option value="bug">Bug Report</option>
+            <option value="feature">Feature Request</option>
+            <option value="improvement">Improvement Suggestion</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Your Feedback *</label>
+          <textarea id="message" name="message" required placeholder="Please describe your feedback in detail..."></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Feedback</button>
+      </form>
+    </div>
+
+    <script>
+      // CardNav Menu Functionality
+      const hamburgerMenu = document.getElementById('hamburgerMenu');
+      const cardNav = document.getElementById('cardNav');
+      const cardNavContent = document.getElementById('cardNavContent');
+      let isExpanded = false;
+
+      function toggleMenu() {
+        isExpanded = !isExpanded;
+        if (isExpanded) {
+          hamburgerMenu.classList.add('open');
+          cardNav.classList.add('open');
+          cardNavContent.setAttribute('aria-hidden', 'false');
+          hamburgerMenu.setAttribute('aria-label', 'Close menu');
+        } else {
+          hamburgerMenu.classList.remove('open');
+          cardNav.classList.remove('open');
+          cardNavContent.setAttribute('aria-hidden', 'true');
+          hamburgerMenu.setAttribute('aria-label', 'Open menu');
+        }
+      }
+
+      hamburgerMenu.addEventListener('click', toggleMenu);
+      hamburgerMenu.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleMenu();
+        }
+      });
+    </script>
+  </body>
+</html>

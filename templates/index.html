@@ -27,7 +27,7 @@
             <img src="{{ url_for('static', filename='images/school-logo.png') }}" alt="OMNHS Logo" class="logo" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/omnhs-logo.png') }}';" />
           </div>
 
-          <a href="{{ url_for('hazard_dashboard') }}" class="card-nav-cta-button">Report Hazard</a>
+          <div style="width: 100px;"></div>
         </div>
 
         <div class="card-nav-content" id="cardNavContent" aria-hidden="true">
@@ -197,12 +197,12 @@
         </div>
 
         <!-- Description Section -->
-        <div class="description-section">
+        <div class="description-section" style="text-align: center;">
           <h2>📝 Description</h2>
           <textarea
             id="hazard-description"
-            placeholder="Describe the hazard (e.g., pothole, broken sidewalk, damaged sign)..."
-            rows="4"
+            placeholder="Describe the hazard in detail (e.g., large pothole on main road, broken handrail on staircase, damaged stop sign at intersection)..."
+            style="width: 100%; max-width: 600px; min-height: 150px; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; resize: vertical;"
             required
           ></textarea>
         </div>

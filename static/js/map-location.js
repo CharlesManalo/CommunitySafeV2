@@ -111,16 +111,17 @@ class MapLocationManager {
             </div>
         `;
     controls.style.cssText = `
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
+            margin-top: 15px;
             background: rgba(255, 255, 255, 0.95);
-            padding: 10px 15px;
+            padding: 15px 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            z-index: 1001;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             text-align: center;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
         `;
 
     mapContainer.appendChild(controls);

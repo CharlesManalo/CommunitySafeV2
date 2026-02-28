@@ -8,6 +8,10 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/cardnav.css') }}"
+    />
     <style>
       .rfid-admin-container {
         max-width: 1400px;
@@ -603,6 +607,38 @@
           refreshLogs();
         }
       }, 30000);
+
+      // CardNav Menu Functionality
+      const hamburgerMenu = document.getElementById("hamburgerMenu");
+      const cardNav = document.getElementById("cardNav");
+      const cardNavContent = document.getElementById("cardNavContent");
+      let isExpanded = false;
+
+      function toggleMenu() {
+        isExpanded = !isExpanded;
+
+        if (isExpanded) {
+          hamburgerMenu.classList.add("open");
+          cardNav.classList.add("open");
+          cardNavContent.setAttribute("aria-hidden", "false");
+          hamburgerMenu.setAttribute("aria-label", "Close menu");
+        } else {
+          hamburgerMenu.classList.remove("open");
+          cardNav.classList.remove("open");
+          cardNavContent.setAttribute("aria-hidden", "true");
+          hamburgerMenu.setAttribute("aria-label", "Open menu");
+        }
+      }
+
+      hamburgerMenu.addEventListener("click", toggleMenu);
+
+      // Keyboard accessibility
+      hamburgerMenu.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleMenu();
+        }
+      });
     </script>
   </body>
 </html>
