@@ -8,23 +8,93 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/cardnav.css') }}"
+    />
   </head>
   <body>
-    <div class="container">
-      <header>
-        <div class="logo-container">
-          <img
-            src="{{ url_for('static', filename='images/school-logo.png') }}"
-            alt="School Logo"
-            class="school-logo"
-            onerror="this.style.display = 'none'"
-          />
-          <div>
-            <h1>CommunitySafe Hazard Reporting</h1>
-            <p>Report hazards to keep our campus safe</p>
+    <!-- CardNav Header -->
+    <div class="card-nav-container">
+      <nav id="cardNav" class="card-nav">
+        <div class="card-nav-top">
+          <div class="hamburger-menu" id="hamburgerMenu" role="button" aria-label="Open menu" tabindex="0">
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+          </div>
+
+          <div class="logo-container">
+            <img src="{{ url_for('static', filename='images/school-logo.png') }}" alt="OMNHS Logo" class="logo" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/omnhs-logo.png') }}';" />
+          </div>
+
+          <a href="{{ url_for('hazard_dashboard') }}" class="card-nav-cta-button">Report Hazard</a>
+        </div>
+
+        <div class="card-nav-content" id="cardNavContent" aria-hidden="true">
+          <!-- Navigation Card -->
+          <div class="nav-card" style="background-color: #0D0716; color: #fff;">
+            <div class="nav-card-label">Navigation</div>
+            <div class="nav-card-links">
+              <a class="nav-card-link" href="{{ url_for('hazard_dashboard') }}" aria-label="Report a hazard">
+                <svg class="nav-card-link-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                </svg>
+                Report Hazard
+              </a>
+              <a class="nav-card-link" href="{{ url_for('history') }}" aria-label="View report history">
+                <svg class="nav-card-link-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                </svg>
+                View History
+              </a>
+            </div>
+          </div>
+
+          <!-- Admin Card -->
+          <div class="nav-card" style="background-color: #170D27; color: #fff;">
+            <div class="nav-card-label">Admin</div>
+            <div class="nav-card-links">
+              <a class="nav-card-link" href="{{ url_for('admin_login') }}" aria-label="Admin login">
+                <svg class="nav-card-link-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                </svg>
+                Admin Login
+              </a>
+              <a class="nav-card-link" href="{{ url_for('admin_rfid_protected') }}" aria-label="RFID dashboard">
+                <svg class="nav-card-link-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                </svg>
+                RFID Dashboard
+              </a>
+            </div>
+          </div>
+
+          <!-- Help Card -->
+          <div class="nav-card" style="background-color: #271E37; color: #fff;">
+            <div class="nav-card-label">Help</div>
+            <div class="nav-card-links">
+              <a class="nav-card-link" href="#" aria-label="How to report guide">
+                <svg class="nav-card-link-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                </svg>
+                How to Report
+              </a>
+              <a class="nav-card-link" href="#" aria-label="Contact support">
+                <svg class="nav-card-link-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                </svg>
+                Contact Support
+              </a>
+            </div>
           </div>
         </div>
-      </header>
+      </nav>
+    </div>
+
+    <!-- Spacer for fixed header -->
+    <div style="height: 100px;"></div>
+
+    <div class="container">
 
       <div class="report-form">
         <!-- Camera Section -->
@@ -282,6 +352,38 @@
 
       // Initialize form check
       checkFormComplete();
+
+      // CardNav Menu Functionality
+      const hamburgerMenu = document.getElementById('hamburgerMenu');
+      const cardNav = document.getElementById('cardNav');
+      const cardNavContent = document.getElementById('cardNavContent');
+      let isExpanded = false;
+
+      function toggleMenu() {
+        isExpanded = !isExpanded;
+        
+        if (isExpanded) {
+          hamburgerMenu.classList.add('open');
+          cardNav.classList.add('open');
+          cardNavContent.setAttribute('aria-hidden', 'false');
+          hamburgerMenu.setAttribute('aria-label', 'Close menu');
+        } else {
+          hamburgerMenu.classList.remove('open');
+          cardNav.classList.remove('open');
+          cardNavContent.setAttribute('aria-hidden', 'true');
+          hamburgerMenu.setAttribute('aria-label', 'Open menu');
+        }
+      }
+
+      hamburgerMenu.addEventListener('click', toggleMenu);
+      
+      // Keyboard accessibility
+      hamburgerMenu.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleMenu();
+        }
+      });
     </script>
   </body>
 </html>
