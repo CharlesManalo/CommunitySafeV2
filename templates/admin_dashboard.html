@@ -29,20 +29,25 @@
             <div class="hamburger-line"></div>
           </div>
 
-          <div class="logo-container">
+          <div
+            class="logo-container"
+            style="display: flex; align-items: center; gap: 12px"
+          >
             <img
               src="{{ url_for('static', filename='images/school-logo.png') }}"
               alt="OMNHS Logo"
               class="logo"
               onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/omnhs-logo.png') }}';"
             />
+            <span style="font-weight: 600; color: #333; font-size: 18px"
+              >Dashboard</span
+            >
           </div>
 
           <a
-            href="{{ url_for('admin_logout') }}"
+            href="{{ url_for('hazard_dashboard') }}"
             class="card-nav-cta-button"
-            style="background-color: #dc3545"
-            >Logout</a
+            >Report</a
           >
         </div>
 

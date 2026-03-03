@@ -29,16 +29,26 @@
             <div class="hamburger-line"></div>
           </div>
 
-          <div class="logo-container">
+          <div
+            class="logo-container"
+            style="display: flex; align-items: center; gap: 12px"
+          >
             <img
               src="{{ url_for('static', filename='images/school-logo.png') }}"
               alt="OMNHS Logo"
               class="logo"
               onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/omnhs-logo.png') }}';"
             />
+            <span style="font-weight: 600; color: #333; font-size: 18px"
+              >Admin</span
+            >
           </div>
 
-          <div style="width: 100px"></div>
+          <a
+            href="{{ url_for('hazard_dashboard') }}"
+            class="card-nav-cta-button"
+            >Report</a
+          >
         </div>
 
         <div class="card-nav-content" id="cardNavContent" aria-hidden="true">
@@ -223,22 +233,6 @@
           <p class="text-warning">⚠️ Change these credentials in production</p>
         </div>
       </div>
-
-      <!-- Navigation -->
-      <nav class="bottom-nav">
-        <a href="{{ url_for('hazard_dashboard') }}" class="nav-item">
-          <span class="nav-icon">📸</span>
-          <span class="nav-text">Report</span>
-        </a>
-        <a href="{{ url_for('history') }}" class="nav-item">
-          <span class="nav-icon">📋</span>
-          <span class="nav-text">History</span>
-        </a>
-        <a href="{{ url_for('admin_login') }}" class="nav-item active">
-          <span class="nav-icon">🔐</span>
-          <span class="nav-text">Admin</span>
-        </a>
-      </nav>
     </div>
 
     <script>

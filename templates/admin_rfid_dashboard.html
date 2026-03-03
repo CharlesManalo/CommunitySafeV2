@@ -215,6 +215,85 @@
     </style>
   </head>
   <body>
+    <!-- CardNav Header -->
+    <div class="card-nav-container">
+      <nav id="cardNav" class="card-nav">
+        <div class="card-nav-top">
+          <div
+            class="hamburger-menu"
+            id="hamburgerMenu"
+            role="button"
+            aria-label="Open menu"
+            tabindex="0"
+          >
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+          </div>
+
+          <div
+            class="logo-container"
+            style="display: flex; align-items: center; gap: 12px"
+          >
+            <img
+              src="{{ url_for('static', filename='images/school-logo.png') }}"
+              alt="OMNHS Logo"
+              class="logo"
+              onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/omnhs-logo.png') }}';"
+            />
+            <span style="font-weight: 600; color: #333; font-size: 18px"
+              >RFID</span
+            >
+          </div>
+
+          <a
+            href="{{ url_for('hazard_dashboard') }}"
+            class="card-nav-cta-button"
+            >Report</a
+          >
+        </div>
+
+        <div class="card-nav-content" id="cardNavContent" aria-hidden="true">
+          <div class="nav-card" style="background-color: #0d0716; color: #fff">
+            <div class="nav-card-label">Navigation</div>
+            <div class="nav-card-links">
+              <a class="nav-card-link" href="{{ url_for('hazard_dashboard') }}"
+                >Report Hazard</a
+              >
+              <a class="nav-card-link" href="{{ url_for('history') }}"
+                >View History</a
+              >
+            </div>
+          </div>
+          <div class="nav-card" style="background-color: #170d27; color: #fff">
+            <div class="nav-card-label">Admin</div>
+            <div class="nav-card-links">
+              <a class="nav-card-link" href="{{ url_for('admin_dashboard') }}"
+                >Dashboard</a
+              >
+              <a
+                class="nav-card-link"
+                href="{{ url_for('admin_rfid_protected') }}"
+                >RFID Dashboard</a
+              >
+            </div>
+          </div>
+          <div class="nav-card" style="background-color: #271e37; color: #fff">
+            <div class="nav-card-label">Help</div>
+            <div class="nav-card-links">
+              <a class="nav-card-link" href="{{ url_for('feedback') }}"
+                >Feedback</a
+              >
+              <a class="nav-card-link" href="{{ url_for('contact') }}"
+                >Contact</a
+              >
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div style="height: 100px"></div>
+
     <div class="rfid-admin-container">
       <!-- Header -->
       <header style="margin-bottom: 30px">
