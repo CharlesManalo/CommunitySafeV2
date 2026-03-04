@@ -499,8 +499,9 @@ def log_rfid_scan():
     print(f"DEBUG: log_rfid_scan called with data: {request.json}")  # Debug print
     try:
         data = request.json
-        rfid = data.get('rfid')
-        pin = data.get('pin')
+        # Accept both parameter names for compatibility
+        rfid = data.get('rfid') or data.get('card_id')
+        pin = data.get('pin') or data.get('teacher_pin')
         
         print(f"DEBUG: Received RFID: {rfid}, PIN: {pin}")  # Debug print
         
