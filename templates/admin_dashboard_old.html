@@ -10,34 +10,191 @@
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/admin-dashboard.css') }}"
+      href="{{ url_for('static', filename='css/cardnav.css') }}"
     />
   </head>
   <body>
-    <!-- Simple Header -->
-    <header class="admin-header">
-      <div class="admin-header-content">
-        <h1>⚙️ Hazard Admin Dashboard</h1>
-        <div class="admin-actions">
-          <span class="admin-welcome"
-            >Welcome, {{ session.admin_username }}</span
+    <!-- CardNav Header -->
+    <div class="card-nav-container">
+      <nav id="cardNav" class="card-nav">
+        <div class="card-nav-top">
+          <div
+            class="hamburger-menu"
+            id="hamburgerMenu"
+            role="button"
+            aria-label="Open menu"
+            tabindex="0"
           >
-          <a href="{{ url_for('admin_feedback') }}" class="btn btn-info"
-            >💬 View Feedback</a
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+          </div>
+
+          <div
+            class="logo-container"
+            style="display: flex; align-items: center; gap: 12px"
           >
-          <a href="{{ url_for('rfid_management') }}" class="btn btn-primary"
-            >👥 RFID/Users</a
-          >
-          <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary"
-            >Logout</a
+            <img
+              src="{{ url_for('static', filename='images/school-logo.png') }}"
+              alt="OMNHS Logo"
+              class="logo"
+              onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/omnhs-logo.png') }}';"
+            />
+            <span style="font-weight: 600; color: #333; font-size: 18px"
+              >Dashboard</span
+            >
+          </div>
+
+          <a
+            href="{{ url_for('hazard_dashboard') }}"
+            class="card-nav-cta-button"
+            >Report</a
           >
         </div>
-      </div>
-    </header>
+
+        <div class="card-nav-content" id="cardNavContent" aria-hidden="true">
+          <div class="nav-card" style="background-color: #0d0716; color: #fff">
+            <div class="nav-card-label">Navigation</div>
+            <div class="nav-card-links">
+              <a
+                class="nav-card-link"
+                href="{{ url_for('hazard_dashboard') }}"
+                aria-label="Report a hazard"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                Report Hazard
+              </a>
+              <a
+                class="nav-card-link"
+                href="{{ url_for('history') }}"
+                aria-label="View report history"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                View History
+              </a>
+            </div>
+          </div>
+
+          <div class="nav-card" style="background-color: #170d27; color: #fff">
+            <div class="nav-card-label">Admin</div>
+            <div class="nav-card-links">
+              <a
+                class="nav-card-link"
+                href="{{ url_for('admin_rfid_protected') }}"
+                aria-label="RFID dashboard"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                RFID Dashboard
+              </a>
+              <a
+                class="nav-card-link"
+                href="{{ url_for('admin_dashboard') }}"
+                aria-label="Admin dashboard"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                Dashboard
+              </a>
+            </div>
+          </div>
+
+          <div class="nav-card" style="background-color: #271e37; color: #fff">
+            <div class="nav-card-label">Help</div>
+            <div class="nav-card-links">
+              <a
+                class="nav-card-link"
+                href="{{ url_for('feedback') }}"
+                aria-label="Send feedback"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                Feedback
+              </a>
+              <a
+                class="nav-card-link"
+                href="{{ url_for('contact') }}"
+                aria-label="Contact support"
+              >
+                <svg
+                  class="nav-card-link-icon"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M7 17L17 7M17 7H7M17 7V17" />
+                </svg>
+                Contact
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
 
     <div style="height: 100px"></div>
 
     <div class="container">
+      <header class="admin-header">
+        <div class="admin-header-content">
+          <h1>⚙️ Hazard Admin Dashboard</h1>
+          <div class="admin-actions">
+            <span class="admin-welcome"
+              >Welcome, {{ session.admin_username }}</span
+            >
+          </div>
+        </div>
+      </header>
+
       <div class="dashboard-stats">
         <div class="stat-card">
           <h3>Total Reports</h3>
@@ -58,27 +215,6 @@
         </div>
       </div>
 
-      <!-- User Activity Monitoring -->
-      <div class="admin-section">
-        <h3>👥 User Activity Monitor</h3>
-        <div class="activity-controls">
-          <button id="refresh-activity" class="btn btn-primary btn-sm">
-            🔄 Refresh Activity
-          </button>
-          <select id="activity-filter">
-            <option value="all">All Activities</option>
-            <option value="login">Logins</option>
-            <option value="report">Report Submissions</option>
-            <option value="access">Page Access</option>
-          </select>
-        </div>
-        <div id="user-activity-list" class="activity-list">
-          <p style="text-align: center; color: #666; padding: 20px">
-            Loading user activities...
-          </p>
-        </div>
-      </div>
-
       <div class="admin-controls">
         <select id="admin-status-filter">
           <option value="all">All Reports</option>
@@ -89,65 +225,16 @@
 
       <div class="admin-reports-list" id="admin-reports-list">
         {% for report in reports %}
-        <div
-          class="admin-report-card"
-          data-status="{{ report.status }}"
-          data-report-id="{{ report.id }}"
-        >
+        <div class="admin-report-card" data-status="{{ report.status }}">
           <div class="report-header">
             <div class="report-id-section">
               <strong>Report #{{ report.id }}</strong>
               <span class="status-badge status-{{ report.status.lower() }}"
                 >{{ report.status }}</span
               >
-              <button
-                class="btn btn-danger btn-sm"
-                onclick="deleteReport({{ report.id }})"
-                style="margin-left: 10px; padding: 5px 10px; font-size: 12px"
-                title="Delete this report permanently"
-              >
-                🗑️ Delete
-              </button>
             </div>
             <div class="report-date">Reported: {{ report.date_reported }}</div>
           </div>
-
-          <!-- User Information Section -->
-          {% if report.user_name or report.rfid_code %}
-          <div
-            class="user-info-section"
-            style="
-              background: #f8f9fa;
-              padding: 10px;
-              margin: 10px 0;
-              border-radius: 5px;
-              border-left: 4px solid #007bff;
-            "
-          >
-            <h4 style="margin: 0 0 8px 0; color: #007bff">👤 Submitted By</h4>
-            {% if report.user_name %}
-            <p style="margin: 4px 0">
-              <strong>Name:</strong> {{ report.user_name }}
-            </p>
-            {% endif %} {% if report.user_role %}
-            <p style="margin: 4px 0">
-              <strong>Role:</strong> {{ report.user_role }}
-            </p>
-            {% endif %} {% if report.rfid_code %}
-            <p style="margin: 4px 0">
-              <strong>RFID Code:</strong>
-              <code
-                style="
-                  background: #e9ecef;
-                  padding: 2px 4px;
-                  border-radius: 3px;
-                "
-                >{{ report.rfid_code }}</code
-              >
-            </p>
-            {% endif %}
-          </div>
-          {% endif %}
 
           <div class="report-description">
             <p>{{ report.description }}</p>
@@ -158,14 +245,28 @@
               <strong>Location:</strong> {{ "%.6f"|format(report.latitude) }},
               {{ "%.6f"|format(report.longitude) }}
             </p>
-            <div class="map-actions">
-              <a
-                href="https://www.google.com/maps/search/?api=1&query={{ report.latitude }},{{ report.longitude }}"
-                target="_blank"
-                class="btn btn-sm btn-primary"
+            <!-- Google Map for Admin -->
+            <div class="admin-map-container">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d15526.022196521722!2d121.1826176!3d13.3809924!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sph!4v1770049480412!5m2!1sen!2sph&q={{ report.latitude }},{{ report.longitude }}"
+                width="100%"
+                height="200"
+                style="border: 0; border-radius: 6px"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                class="admin-map-frame"
               >
-                🗺️ Open in Google Maps
-              </a>
+              </iframe>
+              <div class="map-actions">
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query={{ report.latitude }},{{ report.longitude }}"
+                  target="_blank"
+                  class="btn btn-sm btn-primary"
+                >
+                  🗺️ Open in Google Maps
+                </a>
+              </div>
             </div>
           </div>
 
@@ -185,15 +286,6 @@
               <img
                 src="{{ url_for('uploaded_after_file', filename=report.after_image) }}"
                 alt="Hazard after resolution"
-                class="admin-hazard-image"
-              />
-            </div>
-            {% endif %} {% if report.map_screenshot %}
-            <div class="image-section">
-              <h4>📍 Location</h4>
-              <img
-                src="{{ url_for('serve_map_screenshot', filename=report.map_screenshot) }}"
-                alt="Map screenshot of hazard location"
                 class="admin-hazard-image"
               />
             </div>
@@ -292,89 +384,9 @@
       </div>
     </div>
 
-    <!-- Image Modal -->
-    <div id="imageModal" class="image-modal">
-      <div class="modal-image-container">
-        <button class="modal-close" onclick="closeImageModal()">&times;</button>
-        <img id="modalImage" class="modal-image" src="" alt="Full size image" />
-      </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-      <a href="{{ url_for('index') }}" class="nav-item">
-        <img
-          src="{{ url_for('static', filename='images/icons/report.png') }}"
-          alt="Report"
-          class="nav-icon"
-        />
-        <span class="nav-text">Report</span>
-      </a>
-      <a href="{{ url_for('history') }}" class="nav-item">
-        <img
-          src="{{ url_for('static', filename='images/icons/history.png') }}"
-          alt="History"
-          class="nav-icon"
-        />
-        <span class="nav-text">History</span>
-      </a>
-      <a href="{{ url_for('admin_dashboard') }}" class="nav-item">
-        <img
-          src="{{ url_for('static', filename='images/icons/admin.png') }}"
-          alt="Admin"
-          class="nav-icon"
-        />
-        <span class="nav-text">Admin</span>
-      </a>
-      <a href="{{ url_for('feedback') }}" class="nav-item">
-        <img
-          src="{{ url_for('static', filename='images/icons/user.png') }}"
-          alt="Feedback"
-          class="nav-icon"
-        />
-        <span class="nav-text">Feedback</span>
-      </a>
-    </nav>
-
     <script>
       let currentReportId = null;
       let modalCameraStream = null;
-
-      // Delete Report Function
-      function deleteReport(reportId) {
-        if (
-          confirm(
-            "Are you sure you want to delete this report permanently? This action cannot be undone.",
-          )
-        ) {
-          fetch(`/admin/delete/${reportId}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.success) {
-                // Remove the report card from DOM
-                const reportCard = document.querySelector(
-                  `[data-report-id="${reportId}"]`,
-                );
-                if (reportCard) {
-                  reportCard.remove();
-                }
-                // Show success message
-                alert("Report deleted successfully!");
-              } else {
-                alert("Error deleting report: " + data.error);
-              }
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              alert("Error deleting report. Please try again.");
-            });
-        }
-      }
 
       // Modal functions
       function openResolutionModal(reportId) {
@@ -482,6 +494,7 @@
           const capturedImage = document.getElementById(
             "modal-captured-image",
           ).src;
+          const reportId = document.getElementById("modal-report-id").value;
 
           if (!capturedImage) {
             statusDiv.innerHTML =
@@ -496,7 +509,7 @@
             '<p class="text-info">⏳ Uploading resolution...</p>';
 
           try {
-            const response = await fetch(`/admin/resolve/${currentReportId}`, {
+            const response = await fetch(`/admin/resolve/${reportId}`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -554,131 +567,36 @@
           }
         });
 
-      // User Activity Monitoring
-      function loadUserActivity() {
-        fetch("/api/user-activity")
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              displayUserActivity(data.activities);
-            } else {
-              console.error("Error loading user activity:", data.error);
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            document.getElementById("user-activity-list").innerHTML =
-              '<p style="text-align: center; color: #dc3545;">Error loading user activities</p>';
-          });
-      }
+      // CardNav Menu Functionality
+      const hamburgerMenu = document.getElementById("hamburgerMenu");
+      const cardNav = document.getElementById("cardNav");
+      const cardNavContent = document.getElementById("cardNavContent");
+      let isExpanded = false;
 
-      function displayUserActivity(activities) {
-        const container = document.getElementById("user-activity-list");
-        const filter = document.getElementById("activity-filter").value;
+      function toggleMenu() {
+        isExpanded = !isExpanded;
 
-        const filteredActivities =
-          filter === "all"
-            ? activities
-            : activities.filter((activity) => {
-                const action = activity.action.toLowerCase();
-                if (filter === "login") return action.includes("login");
-                if (filter === "report")
-                  return action.includes("submit_report");
-                if (filter === "access") return action.includes("access");
-                return false;
-              });
-
-        if (filteredActivities.length === 0) {
-          container.innerHTML =
-            '<p style="text-align: center; color: #666; padding: 20px;">No activities found.</p>';
-          return;
+        if (isExpanded) {
+          hamburgerMenu.classList.add("open");
+          cardNav.classList.add("open");
+          cardNavContent.setAttribute("aria-hidden", "false");
+          hamburgerMenu.setAttribute("aria-label", "Close menu");
+        } else {
+          hamburgerMenu.classList.remove("open");
+          cardNav.classList.remove("open");
+          cardNavContent.setAttribute("aria-hidden", "true");
+          hamburgerMenu.setAttribute("aria-label", "Open menu");
         }
-
-        container.innerHTML = filteredActivities
-          .map(
-            (activity) => `
-          <div class="activity-item">
-            <div class="activity-header">
-              <strong>${activity.user_name}</strong>
-              <span class="activity-role">${activity.user_role}</span>
-              <span class="activity-time">${new Date(activity.timestamp).toLocaleString()}</span>
-            </div>
-            <div class="activity-action">${formatActivityAction(activity.action)}</div>
-            ${activity.ip_address ? `<div class="activity-ip">IP: ${activity.ip_address}</div>` : ""}
-          </div>
-        `,
-          )
-          .join("");
       }
 
-      function formatActivityAction(action) {
-        if (action === "LOGIN_SUCCESS") return "✅ Successfully logged in";
-        if (action.startsWith("LOGIN_FAILED")) return "❌ Failed login attempt";
-        if (action === "LOGOUT") return "🚪 Logged out";
-        if (action.startsWith("SUBMIT_REPORT"))
-          return "📝 Submitted hazard report";
-        if (action === "ACCESS_HISTORY") return "📋 Viewed history page";
-        if (action === "ACCESS_DASHBOARD") return "🏠 Accessed main dashboard";
-        return action;
-      }
+      hamburgerMenu.addEventListener("click", toggleMenu);
 
-      // Event listeners for activity monitoring
-      document.addEventListener("DOMContentLoaded", function () {
-        loadUserActivity();
-
-        document
-          .getElementById("refresh-activity")
-          .addEventListener("click", loadUserActivity);
-
-        document
-          .getElementById("activity-filter")
-          .addEventListener("change", function () {
-            loadUserActivity();
-          });
-      });
-    </script>
-
-    <!-- Image Modal Functions -->
-    <script>
-      // Image Modal Functions
-      function openImageModal(imageSrc) {
-        const modal = document.getElementById("imageModal");
-        const modalImage = document.getElementById("modalImage");
-        modalImage.src = imageSrc;
-        modal.classList.add("active");
-        document.body.style.overflow = "hidden";
-      }
-
-      function closeImageModal() {
-        const modal = document.getElementById("imageModal");
-        modal.classList.remove("active");
-        document.body.style.overflow = "auto";
-      }
-
-      // Add click handlers to all images
-      document.addEventListener("DOMContentLoaded", function () {
-        const images = document.querySelectorAll(".admin-hazard-image");
-        images.forEach((img) => {
-          img.addEventListener("click", function () {
-            openImageModal(this.src);
-          });
-        });
-
-        // Close modal on background click
-        document
-          .getElementById("imageModal")
-          .addEventListener("click", function (e) {
-            if (e.target === this) {
-              closeImageModal();
-            }
-          });
-
-        // Close modal on Escape key
-        document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape") {
-            closeImageModal();
-          }
-        });
+      // Keyboard accessibility
+      hamburgerMenu.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleMenu();
+        }
       });
     </script>
   </body>

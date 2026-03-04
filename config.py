@@ -10,6 +10,7 @@ class Config:
     # Upload configuration
     UPLOAD_FOLDER_BEFORE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads', 'before')
     UPLOAD_FOLDER_AFTER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads', 'after')
+    UPLOAD_FOLDER_MAP_SCREENSHOTS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'map_screenshots')
     
     # Maximum upload size (16MB)
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024

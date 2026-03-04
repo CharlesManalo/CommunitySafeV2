@@ -3,324 +3,204 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hazard History - Infrastructure Reporting</title>
+    <title>Report History - Infrastructure Reporting</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/cardnav.css') }}"
-    />
   </head>
   <body>
-    <!-- CardNav Header -->
-    <div class="card-nav-container">
-      <nav id="cardNav" class="card-nav">
-        <div class="card-nav-top">
-          <div
-            class="hamburger-menu"
-            id="hamburgerMenu"
-            role="button"
-            aria-label="Open menu"
-            tabindex="0"
-          >
-            <div class="hamburger-line"></div>
-            <div class="hamburger-line"></div>
-          </div>
-
-          <div
-            class="logo-container"
-            style="display: flex; align-items: center; gap: 12px"
-          >
-            <img
-              src="{{ url_for('static', filename='images/school-logo.png') }}"
-              alt="OMNHS Logo"
-              class="logo"
-              onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/omnhs-logo.png') }}';"
-            />
-            <span style="font-weight: 600; color: #333; font-size: 18px"
-              >History</span
-            >
-          </div>
-
-          <a
-            href="{{ url_for('hazard_dashboard') }}"
-            class="card-nav-cta-button"
-            >Report</a
-          >
-        </div>
-
-        <div class="card-nav-content" id="cardNavContent" aria-hidden="true">
-          <div class="nav-card" style="background-color: #0d0716; color: #fff">
-            <div class="nav-card-label">Navigation</div>
-            <div class="nav-card-links">
-              <a
-                class="nav-card-link"
-                href="{{ url_for('hazard_dashboard') }}"
-                aria-label="Report a hazard"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                Report Hazard
-              </a>
-              <a
-                class="nav-card-link"
-                href="{{ url_for('history') }}"
-                aria-label="View report history"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                View History
-              </a>
-            </div>
-          </div>
-
-          <div class="nav-card" style="background-color: #170d27; color: #fff">
-            <div class="nav-card-label">Admin</div>
-            <div class="nav-card-links">
-              <a
-                class="nav-card-link"
-                href="{{ url_for('admin_login') }}"
-                aria-label="Admin login"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                Admin Login
-              </a>
-              <a
-                class="nav-card-link"
-                href="{{ url_for('admin_rfid_protected') }}"
-                aria-label="RFID dashboard"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                RFID Dashboard
-              </a>
-            </div>
-          </div>
-
-          <div class="nav-card" style="background-color: #271e37; color: #fff">
-            <div class="nav-card-label">Help</div>
-            <div class="nav-card-links">
-              <a
-                class="nav-card-link"
-                href="{{ url_for('feedback') }}"
-                aria-label="Send feedback"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                Feedback
-              </a>
-              <a
-                class="nav-card-link"
-                href="{{ url_for('contact') }}"
-                aria-label="Contact support"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                Contact
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
-    </div>
-
-    <div style="height: 100px"></div>
-
+    <!-- Main Content -->
     <div class="container">
-      <header>
-        <h1>📋 Hazard History</h1>
-        <p>Track reported infrastructure hazards</p>
-      </header>
-
-      <div class="history-controls">
-        <div class="filter-controls">
-          <select id="status-filter">
-            <option value="all">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Resolved">Resolved</option>
+      <div class="report-form">
+        <div class="form-group">
+          <h2>📋 Report History</h2>
+          <select id="status-filter" onchange="filterReports()">
+            <option value="all">All Reports</option>
+            <option value="Pending">Pending Only</option>
+            <option value="Resolved">Resolved Only</option>
           </select>
         </div>
-      </div>
 
-      <div class="reports-list" id="reports-list">
-        {% if reports %} {% for report in reports %}
-        <div class="report-card" data-status="{{ report.status }}">
-          <div class="report-header">
-            <div class="report-id">
-              <strong>Report #{{ report.id }}</strong>
-              <span class="status-badge status-{{ report.status.lower() }}"
-                >{{ report.status }}</span
-              >
-            </div>
-            <div class="report-date">{{ report.date_reported }}</div>
-          </div>
-
-          <div class="report-description">
-            <p>{{ report.description }}</p>
-          </div>
-
-          <div class="report-images">
-            <div class="image-container">
-              <h4>Before</h4>
-              <img
-                src="{{ url_for('uploaded_before_file', filename=report.before_image) }}"
-                alt="Hazard before resolution"
-                class="hazard-image"
-              />
-            </div>
-            {% if report.after_image %}
-            <div class="image-container">
-              <h4>After</h4>
-              <img
-                src="{{ url_for('uploaded_after_file', filename=report.after_image) }}"
-                alt="Hazard after resolution"
-                class="hazard-image"
-              />
-            </div>
-            {% endif %}
-          </div>
-
-          <div class="report-location">
-            <p>
-              <strong>Location:</strong> {{ "%.6f"|format(report.latitude) }},
-              {{ "%.6f"|format(report.longitude) }}
-            </p>
-            {% if report.status == 'Resolved' and report.date_resolved %}
-            <p><strong>Resolved:</strong> {{ report.date_resolved }}</p>
-            {% endif %}
-          </div>
+        <div id="reports-list">
+          <!-- Reports will be loaded here -->
         </div>
-        {% endfor %} {% else %}
-        <div class="no-reports">
-          <p>📭 No hazard reports found</p>
-          <p>Be the first to report an infrastructure hazard!</p>
-        </div>
-        {% endif %}
       </div>
     </div>
 
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="{{ url_for('index') }}" class="nav-item">
+        <img
+          src="{{ url_for('static', filename='images/icons/report.png') }}"
+          alt="Report"
+          class="nav-icon"
+        />
+        <span class="nav-text">Report</span>
+      </a>
+      <a href="{{ url_for('history') }}" class="nav-item active">
+        <img
+          src="{{ url_for('static', filename='images/icons/history.png') }}"
+          alt="History"
+          class="nav-icon"
+        />
+        <span class="nav-text">History</span>
+      </a>
+      <a href="{{ url_for('admin_login') }}" class="nav-item">
+        <img
+          src="{{ url_for('static', filename='images/icons/admin.png') }}"
+          alt="Admin"
+          class="nav-icon"
+        />
+        <span class="nav-text">Admin</span>
+      </a>
+      <a href="{{ url_for('feedback') }}" class="nav-item">
+        <img
+          src="{{ url_for('static', filename='images/icons/user.png') }}"
+          alt="Feedback"
+          class="nav-icon"
+        />
+        <span class="nav-text">Feedback</span>
+      </a>
+    </nav>
+
     <script>
-      // Filter functionality
-      document
-        .getElementById("status-filter")
-        .addEventListener("change", function () {
-          const selectedStatus = this.value.toLowerCase();
-          const reportCards = document.querySelectorAll(".report-card");
+      let allReports = [];
 
-          reportCards.forEach((card) => {
-            const cardStatus = card.getAttribute("data-status").toLowerCase();
-
-            if (selectedStatus === "all" || cardStatus === selectedStatus) {
-              card.style.display = "block";
+      // Load Reports
+      function loadReports() {
+        fetch("/api/reports")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              allReports = data.reports;
+              displayReports(allReports);
             } else {
-              card.style.display = "none";
+              alert("Error loading reports: " + data.error);
             }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error loading reports. Please try again.");
           });
-        });
-
-      // Add fade-in animation for report cards
-      document.addEventListener("DOMContentLoaded", function () {
-        const cards = document.querySelectorAll(".report-card");
-        cards.forEach((card, index) => {
-          card.style.opacity = "0";
-          card.style.transform = "translateY(20px)";
-
-          setTimeout(() => {
-            card.style.transition = "opacity 0.5s ease, transform 0.5s ease";
-            card.style.opacity = "1";
-            card.style.transform = "translateY(0)";
-          }, index * 100);
-        });
-      });
-
-      // CardNav Menu Functionality
-      const hamburgerMenu = document.getElementById("hamburgerMenu");
-      const cardNav = document.getElementById("cardNav");
-      const cardNavContent = document.getElementById("cardNavContent");
-      let isExpanded = false;
-
-      function toggleMenu() {
-        isExpanded = !isExpanded;
-
-        if (isExpanded) {
-          hamburgerMenu.classList.add("open");
-          cardNav.classList.add("open");
-          cardNavContent.setAttribute("aria-hidden", "false");
-          hamburgerMenu.setAttribute("aria-label", "Close menu");
-        } else {
-          hamburgerMenu.classList.remove("open");
-          cardNav.classList.remove("open");
-          cardNavContent.setAttribute("aria-hidden", "true");
-          hamburgerMenu.setAttribute("aria-label", "Open menu");
-        }
       }
 
-      hamburgerMenu.addEventListener("click", toggleMenu);
+      // Display Reports
+      function displayReports(reports) {
+        const container = document.getElementById("reports-list");
+        const statusFilter = document.getElementById("status-filter").value;
 
-      // Keyboard accessibility
-      hamburgerMenu.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          toggleMenu();
+        const filteredReports =
+          statusFilter === "all"
+            ? reports
+            : reports.filter((report) => report.status === statusFilter);
+
+        if (filteredReports.length === 0) {
+          container.innerHTML =
+            '<p style="text-align: center; color: #666;">No reports found.</p>';
+          return;
         }
-      });
+
+        container.innerHTML = filteredReports
+          .map(
+            (report) => `
+          <div class="report-card">
+            <div class="report-header">
+              <div class="report-id">
+                <h3>Report #${report.id}</h3>
+                <span class="status-badge status-${report.status.toLowerCase()}">${report.status}</span>
+              </div>
+              <div class="report-date">${report.date_reported}</div>
+            </div>
+            <div class="report-description">
+              <p>${report.description}</p>
+            </div>
+            
+            <div class="report-images">
+              ${
+                report.before_image
+                  ? `
+                <div class="image-container">
+                  <h4>Before</h4>
+                  <img
+                    src="/static/uploads/before/${report.before_image}"
+                    alt="Hazard before resolution"
+                    class="hazard-image"
+                    onclick="window.open(this.src, '_blank')"
+                    style="cursor: pointer"
+                  />
+                </div>
+              `
+                  : ""
+              }
+              
+              ${
+                report.after_image
+                  ? `
+                <div class="image-container">
+                  <h4>After</h4>
+                  <img
+                    src="/static/uploads/after/${report.after_image}"
+                    alt="Hazard after resolution"
+                    class="hazard-image"
+                    onclick="window.open(this.src, '_blank')"
+                    style="cursor: pointer"
+                  />
+                </div>
+              `
+                  : ""
+              }
+              
+              ${
+                report.status === "Pending"
+                  ? `
+                <div class="image-container">
+                  <h4>⏳ Pending</h4>
+                  <div style="width: 100%; height: 250px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-weight: 500;">
+                    <p>Resolution in progress</p>
+                  </div>
+                </div>
+              `
+                  : ""
+              }
+            </div>
+            
+            <div class="report-location">
+              <p>
+                <strong>Location:</strong> ${report.latitude.toFixed(6)}, ${report.longitude.toFixed(
+                  6,
+                )}
+              </p>
+              <button
+                class="btn btn-secondary"
+                onclick="window.open('https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}', '_blank')"
+              >
+                🗺️ Open in Google Maps
+              </button>
+            </div>
+            
+            ${
+              report.date_resolved
+                ? `
+              <div class="report-date">
+                <p><strong>✅ Resolved:</strong> ${report.date_resolved}</p>
+              </div>
+            `
+                : ""
+            }
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      // Filter Reports
+      function filterReports() {
+        displayReports(allReports);
+      }
+
+      // Load reports on page load
+      document.addEventListener("DOMContentLoaded", loadReports);
     </script>
   </body>
 </html>

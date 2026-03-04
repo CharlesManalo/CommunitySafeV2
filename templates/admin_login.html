@@ -3,212 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Login - Infrastructure Reporting</title>
+    <title>Admin Login</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/cardnav.css') }}"
+      href="{{ url_for('static', filename='css/forms.css') }}"
     />
   </head>
   <body>
-    <!-- CardNav Header -->
-    <div class="card-nav-container">
-      <nav id="cardNav" class="card-nav">
-        <div class="card-nav-top">
-          <div
-            class="hamburger-menu"
-            id="hamburgerMenu"
-            role="button"
-            aria-label="Open menu"
-            tabindex="0"
-          >
-            <div class="hamburger-line"></div>
-            <div class="hamburger-line"></div>
-          </div>
-
-          <div
-            class="logo-container"
-            style="display: flex; align-items: center; gap: 12px"
-          >
-            <img
-              src="{{ url_for('static', filename='images/school-logo.png') }}"
-              alt="OMNHS Logo"
-              class="logo"
-              onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/omnhs-logo.png') }}';"
-            />
-            <span style="font-weight: 600; color: #333; font-size: 18px"
-              >Admin</span
-            >
-          </div>
-
-          <a
-            href="{{ url_for('hazard_dashboard') }}"
-            class="card-nav-cta-button"
-            >Report</a
-          >
-        </div>
-
-        <div class="card-nav-content" id="cardNavContent" aria-hidden="true">
-          <div class="nav-card" style="background-color: #0d0716; color: #fff">
-            <div class="nav-card-label">Navigation</div>
-            <div class="nav-card-links">
-              <a
-                class="nav-card-link"
-                href="{{ url_for('hazard_dashboard') }}"
-                aria-label="Report a hazard"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                Report Hazard
-              </a>
-              <a
-                class="nav-card-link"
-                href="{{ url_for('history') }}"
-                aria-label="View report history"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                View History
-              </a>
-            </div>
-          </div>
-
-          <div class="nav-card" style="background-color: #170d27; color: #fff">
-            <div class="nav-card-label">Admin</div>
-            <div class="nav-card-links">
-              <a
-                class="nav-card-link"
-                href="{{ url_for('admin_login') }}"
-                aria-label="Admin login"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                Admin Login
-              </a>
-              <a
-                class="nav-card-link"
-                href="{{ url_for('admin_rfid_protected') }}"
-                aria-label="RFID dashboard"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                RFID Dashboard
-              </a>
-            </div>
-          </div>
-
-          <div class="nav-card" style="background-color: #271e37; color: #fff">
-            <div class="nav-card-label">Help</div>
-            <div class="nav-card-links">
-              <a
-                class="nav-card-link"
-                href="{{ url_for('feedback') }}"
-                aria-label="Send feedback"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                Feedback
-              </a>
-              <a
-                class="nav-card-link"
-                href="{{ url_for('contact') }}"
-                aria-label="Contact support"
-              >
-                <svg
-                  class="nav-card-link-icon"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M7 17L17 7M17 7H7M17 7V17" />
-                </svg>
-                Contact
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
-    </div>
-
-    <div style="height: 100px"></div>
-
+    <!-- Main Content -->
     <div class="container">
-      <header>
-        <h1>Admin Login</h1>
-        <p>Secure access to hazard management</p>
-      </header>
+      <div class="report-form">
+        <h2>🔐 Admin Login</h2>
 
-      <div class="login-form-container">
-        <form
-          method="POST"
-          action="{{ url_for('admin_login') }}"
-          class="login-form"
-        >
-          {% with messages = get_flashed_messages(with_categories=true) %} {% if
-          messages %} {% for category, message in messages %}
-          <div class="alert alert-{{ category }}">{{ message }}</div>
-          {% endfor %} {% endif %} {% endwith %}
-
+        <form method="POST" action="{{ url_for('admin_login') }}">
           <div class="form-group">
             <label for="username">Username</label>
             <input
               type="text"
               id="username"
               name="username"
-              placeholder="Enter admin username"
+              placeholder="Enter your username"
               required
-              autofocus
+              autocomplete="username"
             />
           </div>
 
@@ -218,14 +38,16 @@
               type="password"
               id="password"
               name="password"
-              placeholder="Enter admin password"
+              placeholder="Enter your password"
               required
+              autocomplete="current-password"
             />
           </div>
 
           <button type="submit" class="btn btn-primary btn-lg">🔐 Login</button>
         </form>
 
+        <!-- Login Info -->
         <div class="login-info">
           <h3>Default Credentials</h3>
           <p><strong>Username:</strong> admin</p>
@@ -234,6 +56,42 @@
         </div>
       </div>
     </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="{{ url_for('index') }}" class="nav-item">
+        <img
+          src="{{ url_for('static', filename='images/icons/report.png') }}"
+          alt="Report"
+          class="nav-icon"
+        />
+        <span class="nav-text">Report</span>
+      </a>
+      <a href="{{ url_for('history') }}" class="nav-item">
+        <img
+          src="{{ url_for('static', filename='images/icons/history.png') }}"
+          alt="History"
+          class="nav-icon"
+        />
+        <span class="nav-text">History</span>
+      </a>
+      <a href="{{ url_for('admin_login') }}" class="nav-item active">
+        <img
+          src="{{ url_for('static', filename='images/icons/admin.png') }}"
+          alt="Admin"
+          class="nav-icon"
+        />
+        <span class="nav-text">Admin</span>
+      </a>
+      <a href="{{ url_for('feedback') }}" class="nav-item">
+        <img
+          src="{{ url_for('static', filename='images/icons/user.png') }}"
+          alt="Feedback"
+          class="nav-icon"
+        />
+        <span class="nav-text">Feedback</span>
+      </a>
+    </nav>
 
     <script>
       // Auto-focus on username field
@@ -244,39 +102,7 @@
       // Handle Enter key submission
       document.addEventListener("keypress", function (e) {
         if (e.key === "Enter") {
-          document.querySelector(".login-form").submit();
-        }
-      });
-
-      // CardNav Menu Functionality
-      const hamburgerMenu = document.getElementById("hamburgerMenu");
-      const cardNav = document.getElementById("cardNav");
-      const cardNavContent = document.getElementById("cardNavContent");
-      let isExpanded = false;
-
-      function toggleMenu() {
-        isExpanded = !isExpanded;
-
-        if (isExpanded) {
-          hamburgerMenu.classList.add("open");
-          cardNav.classList.add("open");
-          cardNavContent.setAttribute("aria-hidden", "false");
-          hamburgerMenu.setAttribute("aria-label", "Close menu");
-        } else {
-          hamburgerMenu.classList.remove("open");
-          cardNav.classList.remove("open");
-          cardNavContent.setAttribute("aria-hidden", "true");
-          hamburgerMenu.setAttribute("aria-label", "Open menu");
-        }
-      }
-
-      hamburgerMenu.addEventListener("click", toggleMenu);
-
-      // Keyboard accessibility
-      hamburgerMenu.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          toggleMenu();
+          document.querySelector("form").submit();
         }
       });
     </script>

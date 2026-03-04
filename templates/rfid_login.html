@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RFID Access System</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <style>
+      .rfid-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+      }
+      
+      .rfid-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+      }
+      
+      .rfid-logo {
+        font-size: 60px;
+        margin-bottom: 20px;
+      }
+      
+      .rfid-title {
+        font-size: 24px;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+      
+      .rfid-subtitle {
+        color: #6c757d;
+        margin-bottom: 30px;
+        font-size: 16px;
+      }
+      
+      .auth-tabs {
+        display: flex;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f8f9fa;
+      }
+      
+      .auth-tab {
+        flex: 1;
+        padding: 15px;
+        border: none;
+        background: #f8f9fa;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      
+      .auth-tab.active {
+        background: #667eea;
+        color: white;
+      }
+      
+      .auth-content {
+        display: none;
+      }
+      
+      .auth-content.active {
+        display: block;
+      }
+      
+      .pin-input {
+        width: 100%;
+        padding: 15px;
+        font-size: 18px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        text-align: center;
+        letter-spacing: 5px;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+      
+      .pin-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+      
+      .rfid-status {
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-weight: 500;
+        display: none;
+      }
+      
+      .rfid-status.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      
+      .rfid-status.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      
+      .rfid-status.waiting {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+      }
+      
+      .admin-link {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+      }
+      
+      .admin-link:hover {
+        opacity: 1;
+      }
+      
+      .loading-spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <a href="{{ url_for('admin_login') }}" class="admin-link">⚙️ Admin</a>
+    
+    <div class="rfid-container">
+      <div class="rfid-card">
+        <div class="rfid-logo">🔐</div>
+        <h1 class="rfid-title">RFID Access System</h1>
+        <p class="rfid-subtitle">Choose your authentication method</p>
+        
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="switchTab('rfid')">
+            📱 RFID Scan
+          </button>
+          <button class="auth-tab" onclick="switchTab('pin')">
+            🔢 PIN Code
+          </button>
+        </div>
+        
+        <!-- RFID Authentication -->
+        <div id="rfid-auth" class="auth-content active">
+          <div class="loading-spinner" id="rfid-spinner"></div>
+          <div class="rfid-status" id="rfid-status">
+            Waiting for RFID scan...
+          </div>
+          <button class="btn btn-primary" onclick="startRFIDScan()" style="width: 100%;">
+            📱 Start RFID Scan
+          </button>
+        </div>
+        
+        <!-- PIN Authentication -->
+        <div id="pin-auth" class="auth-content">
+          <input 
+            type="password" 
+            id="pin-input" 
+            class="pin-input" 
+            placeholder="Enter 4-digit PIN"
+            maxlength="4"
+            pattern="[0-9]{4}"
+            onkeypress="handlePinKeypress(event)"
+          >
+          <div class="rfid-status" id="pin-status"></div>
+          <button class="btn btn-primary" onclick="submitPIN()" style="width: 100%;">
+            🔐 Login with PIN
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentTab = 'rfid';
+      
+      function switchTab(tab) {
+        currentTab = tab;
+        
+        // Update tab buttons
+        document.querySelectorAll('.auth-tab').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.auth-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        document.getElementById(tab + '-auth').classList.add('active');
+        
+        // Clear status messages
+        hideAllStatus();
+      }
+      
+      function showStatus(elementId, message, type) {
+        const statusEl = document.getElementById(elementId);
+        statusEl.textContent = message;
+        statusEl.className = `rfid-status ${type}`;
+        statusEl.style.display = 'block';
+      }
+      
+      function hideStatus(elementId) {
+        const statusEl = document.getElementById(elementId);
+        statusEl.style.display = 'none';
+      }
+      
+      function hideAllStatus() {
+        hideStatus('rfid-status');
+        hideStatus('pin-status');
+      }
+      
+      function showSpinner(spinnerId) {
+        document.getElementById(spinnerId).style.display = 'block';
+      }
+      
+      function hideSpinner(spinnerId) {
+        document.getElementById(spinnerId).style.display = 'none';
+      }
+      
+      // RFID Functions
+      function startRFIDScan() {
+        showStatus('rfid-status', 'Scanning for RFID... Please tap your card.', 'waiting');
+        showSpinner('rfid-spinner');
+        
+        // Simulate RFID scan (in real implementation, this would connect to RFID reader)
+        setTimeout(() => {
+          // For demo, we'll use a test PIN
+          authenticateWithPin('1234');
+        }, 2000);
+      }
+      
+      // PIN Functions
+      function handlePinKeypress(event) {
+        if (event.key === 'Enter') {
+          submitPIN();
+        }
+        
+        // Only allow numbers
+        if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
+          event.preventDefault();
+        }
+      }
+      
+      function submitPIN() {
+        const pin = document.getElementById('pin-input').value;
+        
+        if (pin.length !== 4) {
+          showStatus('pin-status', 'Please enter a 4-digit PIN', 'error');
+          return;
+        }
+        
+        authenticateWithPin(pin);
+      }
+      
+      function authenticateWithPin(pin) {
+        showSpinner('rfid-spinner');
+        
+        fetch('/rfid-authenticate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ pin: pin })
+        })
+        .then(response => response.json())
+        .then(data => {
+          hideSpinner('rfid-spinner');
+          
+          if (data.success) {
+            showStatus(currentTab + '-status', 'Authentication successful! Redirecting...', 'success');
+            
+            setTimeout(() => {
+              window.location.href = data.redirect;
+            }, 1500);
+          } else {
+            showStatus(currentTab + '-status', data.error || 'Authentication failed', 'error');
+          }
+        })
+        .catch(error => {
+          hideSpinner('rfid-spinner');
+          showStatus(currentTab + '-status', 'Connection error. Please try again.', 'error');
+          console.error('Authentication error:', error);
+        });
+      }
+      
+      // Focus on PIN input when PIN tab is selected
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('pin-input').addEventListener('input', function(e) {
+          // Auto-focus next field or submit
+          if (e.target.value.length === 4) {
+            submitPIN();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

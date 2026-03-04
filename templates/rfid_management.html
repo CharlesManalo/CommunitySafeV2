@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RFID/User Management - Infrastructure Reporting</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/admin-dashboard.css') }}"
+    />
+    <style>
+      .management-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin-bottom: 25px;
+      }
+
+      .section-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+      }
+
+      .section-title {
+        margin: 0 0 20px 0;
+        color: #2c3e50;
+        font-size: 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .teacher-form {
+        display: grid;
+        gap: 15px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #495057;
+        font-size: 14px;
+      }
+
+      .form-group input,
+      .form-group select {
+        padding: 10px;
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .activity-log {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        background: #f8f9fa;
+      }
+
+      .log-item {
+        background: white;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border-left: 4px solid #667eea;
+        font-size: 14px;
+      }
+
+      .log-item.rfid {
+        border-left-color: #28a745;
+      }
+
+      .log-item.pin {
+        border-left-color: #ffc107;
+      }
+
+      .log-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .log-user {
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .log-type {
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .log-type.rfid {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .log-type.pin {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .log-time {
+        color: #6c757d;
+        font-size: 12px;
+      }
+
+      .log-details {
+        color: #495057;
+        font-size: 13px;
+      }
+
+      .teacher-list {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        background: #f8f9fa;
+      }
+
+      .teacher-item {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .teacher-info {
+        flex: 1;
+      }
+
+      .teacher-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+      }
+
+      .teacher-details {
+        font-size: 13px;
+        color: #6c757d;
+      }
+
+      .teacher-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .btn-icon {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .stat-card-small {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-number-small {
+        font-size: 24px;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 5px;
+      }
+
+      .stat-label-small {
+        font-size: 14px;
+        color: #6c757d;
+        font-weight: 500;
+      }
+
+      @media (max-width: 768px) {
+        .management-container {
+          grid-template-columns: 1fr;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="admin-header">
+      <div class="admin-header-content">
+        <h1>👥 RFID/User Management</h1>
+        <div class="admin-actions">
+          <span class="admin-welcome"
+            >Welcome, {{ session.admin_username }}</span
+          >
+          <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary"
+            >← Back</a
+          >
+          <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary"
+            >Logout</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <div style="height: 80px"></div>
+
+    <div class="container">
+      <!-- Statistics -->
+      <div class="stats-grid">
+        <div class="stat-card-small">
+          <div class="stat-number-small" id="total-teachers">0</div>
+          <div class="stat-label-small">Total Teachers</div>
+        </div>
+        <div class="stat-card-small">
+          <div class="stat-number-small" id="today-logins">0</div>
+          <div class="stat-label-small">Today's Logins</div>
+        </div>
+        <div class="stat-card-small">
+          <div class="stat-number-small" id="rfid-scans">0</div>
+          <div class="stat-label-small">RFID Scans</div>
+        </div>
+        <div class="stat-card-small">
+          <div class="stat-number-small" id="pin-logins">0</div>
+          <div class="stat-label-small">PIN Logins</div>
+        </div>
+      </div>
+
+      <!-- Management Grid -->
+      <div class="management-container">
+        <!-- Add/Edit Teacher Section -->
+        <div class="section-card">
+          <h2 class="section-title">
+            <span>👨‍🏫</span>
+            <span>Teacher Management</span>
+          </h2>
+
+          <form id="teacher-form" class="teacher-form">
+            <input type="hidden" id="teacher-id" value="" />
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="teacher-name">Name *</label>
+                <input
+                  type="text"
+                  id="teacher-name"
+                  required
+                  placeholder="Enter teacher name"
+                />
+              </div>
+              <div class="form-group">
+                <label for="teacher-pin">4-Digit PIN *</label>
+                <input
+                  type="text"
+                  id="teacher-pin"
+                  required
+                  maxlength="4"
+                  pattern="[0-9]{4}"
+                  placeholder="1234"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="teacher-role">Role</label>
+              <select id="teacher-role">
+                <option value="teacher">Teacher</option>
+                <option value="staff">Staff</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="teacher-status">Status</label>
+              <select id="teacher-status">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+
+            <div style="display: flex; gap: 10px">
+              <button type="submit" class="btn btn-primary" id="submit-btn">
+                ➕ Add Teacher
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="resetForm()"
+              >
+                🔄 Clear Form
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="section-card">
+          <h2 class="section-title">
+            <span>📊</span>
+            <span>Recent Activity</span>
+          </h2>
+
+          <div class="activity-log" id="activity-log">
+            <p style="text-align: center; color: #666; padding: 20px">
+              Loading activity log...
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teacher List Section -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <span>📋</span>
+          <span>Teacher List</span>
+        </h2>
+
+        <div class="teacher-list" id="teacher-list">
+          <p style="text-align: center; color: #666; padding: 20px">
+            Loading teachers...
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let editingTeacherId = null;
+
+      // Load initial data
+      document.addEventListener("DOMContentLoaded", function () {
+        loadTeachers();
+        loadActivity();
+        updateStatistics();
+      });
+
+      // Teacher form submission
+      document
+        .getElementById("teacher-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          saveTeacher();
+        });
+
+      function saveTeacher() {
+        const teacherId = document.getElementById("teacher-id").value;
+        const isEdit = teacherId !== "";
+
+        const data = {
+          name: document.getElementById("teacher-name").value,
+          pin: document.getElementById("teacher-pin").value,
+          role: document.getElementById("teacher-role").value,
+          status: document.getElementById("teacher-status").value,
+        };
+
+        const url = isEdit
+          ? `/api/rfid/teacher/${teacherId}`
+          : "/api/rfid/teacher";
+        const method = isEdit ? "PUT" : "POST";
+
+        fetch(url, {
+          method: method,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams(data),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              alert(data.message);
+              resetForm();
+              loadTeachers();
+              updateStatistics();
+            } else {
+              alert("Error: " + data.error);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error saving teacher");
+          });
+      }
+
+      function editTeacher(teacherId) {
+        fetch("/api/rfid/teachers")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              const teacher = data.teachers.find((t) => t.id == teacherId);
+              if (teacher) {
+                document.getElementById("teacher-id").value = teacher.id;
+                document.getElementById("teacher-name").value = teacher.name;
+                document.getElementById("teacher-pin").value = teacher.pin;
+                document.getElementById("teacher-role").value = teacher.role;
+                document.getElementById("teacher-status").value =
+                  teacher.status;
+
+                document.getElementById("submit-btn").textContent =
+                  "💾 Update Teacher";
+                editingTeacherId = teacherId;
+
+                // Scroll to form
+                document
+                  .querySelector(".section-card")
+                  .scrollIntoView({ behavior: "smooth" });
+              }
+            }
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      function deleteTeacher(teacherId, teacherName) {
+        if (confirm(`Are you sure you want to delete ${teacherName}?`)) {
+          fetch(`/api/rfid/teacher/${teacherId}`, {
+            method: "DELETE",
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                alert(data.message);
+                loadTeachers();
+                updateStatistics();
+              } else {
+                alert("Error: " + data.error);
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("Error deleting teacher");
+            });
+        }
+      }
+
+      function resetForm() {
+        document.getElementById("teacher-form").reset();
+        document.getElementById("teacher-id").value = "";
+        document.getElementById("submit-btn").textContent = "➕ Add Teacher";
+        editingTeacherId = null;
+      }
+
+      function loadTeachers() {
+        fetch("/api/rfid/teachers")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              displayTeachers(data.teachers);
+            }
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      function displayTeachers(teachers) {
+        const container = document.getElementById("teacher-list");
+
+        if (teachers.length === 0) {
+          container.innerHTML =
+            '<p style="text-align: center; color: #666; padding: 20px;">No teachers found.</p>';
+          return;
+        }
+
+        container.innerHTML = teachers
+          .map(
+            (teacher) => `
+          <div class="teacher-item">
+            <div class="teacher-info">
+              <div class="teacher-name">${teacher.name}</div>
+              <div class="teacher-details">
+                PIN: ${teacher.pin} | Role: ${teacher.role} | Status: ${teacher.status}
+              </div>
+            </div>
+            <div class="teacher-actions">
+              <button class="btn btn-primary btn-sm" onclick="editTeacher(${teacher.id})">
+                ✏️ Edit
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="deleteTeacher(${teacher.id}, '${teacher.name}')">
+                🗑️ Delete
+              </button>
+            </div>
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      function loadActivity() {
+        fetch("/api/user-activity")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              displayActivity(data.activities.slice(0, 20)); // Show last 20 activities
+            }
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      function displayActivity(activities) {
+        const container = document.getElementById("activity-log");
+
+        if (activities.length === 0) {
+          container.innerHTML =
+            '<p style="text-align: center; color: #666; padding: 20px;">No activity found.</p>';
+          return;
+        }
+
+        container.innerHTML = activities
+          .map((activity) => {
+            const isRfid =
+              activity.action.includes("RFID") ||
+              (activity.user_name === "RFID User" &&
+                activity.action.includes("LOGIN"));
+            const type = isRfid ? "rfid" : "pin";
+
+            return `
+            <div class="log-item ${type}">
+              <div class="log-header">
+                <span class="log-user">${activity.user_name}</span>
+                <span class="log-type ${type}">${type.toUpperCase()}</span>
+                <span class="log-time">${new Date(activity.timestamp).toLocaleString()}</span>
+              </div>
+              <div class="log-details">
+                ${formatActivityAction(activity.action)}
+                ${activity.ip_address ? ` | IP: ${activity.ip_address}` : ""}
+              </div>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      function formatActivityAction(action) {
+        if (action === "LOGIN_SUCCESS") return "✅ Successfully logged in";
+        if (action.startsWith("LOGIN_FAILED")) return "❌ Failed login attempt";
+        if (action === "LOGOUT") return "🚪 Logged out";
+        if (action.startsWith("SUBMIT_REPORT"))
+          return "📝 Submitted hazard report";
+        if (action === "ACCESS_HISTORY") return "📋 Viewed history page";
+        if (action === "ACCESS_DASHBOARD") return "🏠 Accessed main dashboard";
+        if (action.includes("RFID")) return action;
+        return action;
+      }
+
+      function updateStatistics() {
+        fetch("/api/rfid/teachers")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              document.getElementById("total-teachers").textContent =
+                data.teachers.length;
+            }
+          });
+
+        fetch("/api/user-activity")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              const today = new Date().toDateString();
+              const todayActivities = data.activities.filter(
+                (a) => new Date(a.timestamp).toDateString() === today,
+              );
+
+              const rfidCount = data.activities.filter(
+                (a) => a.action.includes("RFID") || a.user_name === "RFID User",
+              ).length;
+
+              const pinCount = data.activities.filter(
+                (a) =>
+                  a.action === "LOGIN_SUCCESS" && a.user_name !== "RFID User",
+              ).length;
+
+              document.getElementById("today-logins").textContent =
+                todayActivities.length;
+              document.getElementById("rfid-scans").textContent = rfidCount;
+              document.getElementById("pin-logins").textContent = pinCount;
+            }
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      // Auto-refresh activity every 30 seconds
+      setInterval(() => {
+        loadActivity();
+        updateStatistics();
+      }, 30000);
+    </script>
+  </body>
+</html>

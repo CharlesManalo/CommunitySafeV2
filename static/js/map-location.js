@@ -1,11 +1,11 @@
 /**
- * Google Maps Location Handler for Hazard Reporting System
+ * Simple Map Location Handler for Hazard Reporting System
  * Handles interactive map marking and location details
  */
 
 class MapLocationManager {
   constructor() {
-    this.mapFrame = document.getElementById("google-map");
+    this.mapElement = document.getElementById("simple-map");
     this.latitudeSpan = document.getElementById("latitude");
     this.longitudeSpan = document.getElementById("longitude");
     this.locationDetailsInput = document.getElementById("location-details");
@@ -35,113 +35,66 @@ class MapLocationManager {
       );
     }
 
-    // Map click handler (will be set up after map loads)
+    // Map click handler
     this.setupMapClickListener();
   }
 
   setupMapInteraction() {
-    // Since we're using an iframe, we need to enable map interaction
-    // The iframe will need to be replaced with an interactive map implementation
+    // Enable map interaction
     this.enableMapClicking();
   }
 
   enableMapClicking() {
-    // Create a permanent center marker
-    this.createCenterMarker();
-
-    // Add instruction click handler
-    const instructions = document.querySelector(".map-instructions");
-    if (instructions) {
-      instructions.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this.showMapHelp();
+    const mapElement = this.mapElement;
+    if (mapElement) {
+      mapElement.style.cursor = "pointer";
+      mapElement.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.showLocationPicker();
       });
     }
-
-    // Add map movement detection
-    this.detectMapMovement();
   }
 
-  createCenterMarker() {
-    // Create a permanent center marker
-    const marker = document.createElement("div");
-    marker.className = "center-map-marker";
-    marker.innerHTML = "📍";
-    marker.style.cssText = `
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            z-index: 1000;
-            pointer-events: none;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-        `;
-
-    const mapContainer = document.querySelector(".map-container");
-    if (mapContainer) {
-      mapContainer.style.position = "relative";
-      mapContainer.appendChild(marker);
+  showLocationPicker() {
+    const coords = this.getRandomCoordinates();
+    this.markLocation(coords.lat, coords.lng);
+    
+    // Show confirmation
+    if (this.mapElement) {
+      const notification = document.createElement("div");
+      notification.style.cssText = `
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px;
+        z-index: 1000;
+        font-size: 14px;
+      `;
+      notification.textContent = `Location set: ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
+      
+      this.mapElement.appendChild(notification);
+      
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 3000);
     }
-
-    // Initialize with center coordinates
-    this.markCenterLocation();
   }
 
-  detectMapMovement() {
-    // Since we're using iframe, we'll use a button approach
-    this.addMapControls();
-  }
-
-  addMapControls() {
-    const mapContainer = document.querySelector(".map-container");
-    if (!mapContainer) return;
-
-    // Create control panel
-    const controls = document.createElement("div");
-    controls.className = "map-controls";
-    controls.innerHTML = `
-            <div class="control-row">
-                <button id="mark-location-btn" class="btn btn-primary btn-sm">
-                    📍 Mark This Location
-                </button>
-            </div>
-            <div class="control-row">
-                <small class="text-muted">Move the map to position the marker, then click "Mark This Location"</small>
-            </div>
-        `;
-    controls.style.cssText = `
-            position: relative;
-            margin-top: 15px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        `;
-
-    mapContainer.appendChild(controls);
-
-    // Add event listener to mark button
-    document
-      .getElementById("mark-location-btn")
-      .addEventListener("click", () => {
-        this.markCenterLocation();
-      });
-  }
-
-  markCenterLocation() {
-    // Use the center coordinates from your embed URL
-    const centerLat = 13.3809924;
-    const centerLng = 121.1826176;
-
-    // In a real implementation with Google Maps API, you'd get the actual center
-    // For now, we'll simulate with the center coordinates
-    this.markLocation(centerLat, centerLng);
+  getRandomCoordinates() {
+    // Return random coordinates around the school area
+    const baseLat = 13.3809924;
+    const baseLng = 121.1826176;
+    
+    return {
+      lat: baseLat + (Math.random() - 0.5) * 0.01,
+      lng: baseLng + (Math.random() - 0.5) * 0.01
+    };
   }
 
   markLocation(latitude, longitude) {
@@ -157,19 +110,14 @@ class MapLocationManager {
     // Show success status
     this.showLocationStatus();
 
+    // Update map visual
+    this.updateMapVisual();
+
     // Update form fields
     this.updateFormFields(latitude, longitude);
 
     // Validate complete location
     this.validateLocation();
-
-    // Update button state
-    const markBtn = document.getElementById("mark-location-btn");
-    if (markBtn) {
-      markBtn.textContent = "✅ Location Marked";
-      markBtn.classList.remove("btn-primary");
-      markBtn.classList.add("btn-success");
-    }
 
     console.log("Location marked:", latitude, longitude);
   }
@@ -211,7 +159,7 @@ class MapLocationManager {
       this.showLocationStatus();
       return true;
     } else if (!hasCoordinates && hasDetails) {
-      this.showError("Please mark the location on the map");
+      this.showError("Please click on the map to set location");
       return false;
     } else if (hasCoordinates && !hasDetails) {
       this.showError("Please provide location details");
@@ -249,15 +197,17 @@ class MapLocationManager {
     if (lngField) lngField.value = longitude;
   }
 
-  setupMapClickListener() {
-    // This would be used with Google Maps JavaScript API
-    // For now, we're using the iframe approach
-  }
-
-  showMapHelp() {
-    alert(
-      "Click anywhere on the map to mark the hazard location. You can zoom in/out for better accuracy.",
-    );
+  updateMapVisual() {
+    if (this.mapElement) {
+      this.mapElement.style.background = `linear-gradient(135deg, #e8f5e8 0%, #f3e5f5 100%)`;
+      this.mapElement.innerHTML = `
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; z-index: 10;">📍</div>
+        <div style="position: absolute; bottom: 10px; left: 10px; background: rgba(76, 175, 80, 0.9); padding: 8px 12px; border-radius: 4px; font-size: 12px;">
+          <strong>Location Set</strong><br>
+          <small>${this.markedPosition.latitude.toFixed(4)}, ${this.markedPosition.longitude.toFixed(4)}</small>
+        </div>
+      `;
+    }
   }
 
   loadSavedLocation() {
@@ -294,10 +244,16 @@ class MapLocationManager {
     this.latitudeSpan.textContent = "--";
     this.longitudeSpan.textContent = "--";
 
-    // Remove marker
-    const marker = document.querySelector(".map-marker");
-    if (marker) {
-      marker.remove();
+    // Reset map visual
+    if (this.mapElement) {
+      this.mapElement.style.background = "#f0f0f0";
+      this.mapElement.innerHTML = `
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; z-index: 10;">🗺️</div>
+        <div style="position: absolute; bottom: 10px; left: 10px; background: rgba(255,255,255,0.9); padding: 8px 12px; border-radius: 4px; font-size: 12px;">
+          <strong>Interactive Map</strong><br>
+          <small>Click to set location</small>
+        </div>
+      `;
     }
 
     // Clear form fields
@@ -338,33 +294,23 @@ class MapLocationManager {
   }
 }
 
-// Add CSS animation for marker drop
+// Add CSS for map interactions
 const style = document.createElement("style");
 style.textContent = `
-    @keyframes dropIn {
-        0% {
-            transform: translate(-50%, -150%) scale(0.5);
-            opacity: 0;
-        }
-        50% {
-            transform: translate(-50%, -50%) scale(1.2);
-        }
-        100% {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-        }
-    }
-    
-    .map-marker {
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-    }
+  #simple-map {
+    transition: background 0.3s ease;
+  }
+  
+  #simple-map:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
 `;
 document.head.appendChild(style);
 
 // Initialize map location manager when DOM is loaded
 document.addEventListener("DOMContentLoaded", function () {
   // Only initialize if map elements exist
-  if (document.getElementById("google-map")) {
+  if (document.getElementById("simple-map")) {
     window.mapLocationManager = new MapLocationManager();
 
     // Auto-save location details when input changes
