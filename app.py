@@ -168,10 +168,13 @@ def rfid_login():
 @app.route('/rfid-authenticate', methods=['POST'])
 def rfid_authenticate():
     """Handle RFID/PIN authentication"""
+    print(f"DEBUG: rfid_authenticate called with data: {request.json}")  # Debug print
     try:
         data = request.json
         pin = data.get('pin')
         rfid = data.get('rfid')  # Accept RFID data
+        
+        print(f"DEBUG: Received PIN: {pin}, RFID: {rfid}")  # Debug print
         
         # Get client IP for logging
         client_ip = request.remote_addr
@@ -180,6 +183,7 @@ def rfid_authenticate():
         
         # Check for PIN authentication (teachers)
         if pin:
+            print(f"DEBUG: Checking PIN {pin} in database")  # Debug print
             conn = get_db_connection()
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
@@ -187,12 +191,16 @@ def rfid_authenticate():
             teacher = cursor.fetchone()
             conn.close()
             
+            print(f"DEBUG: Database query result: {teacher}")  # Debug print
+            
             if teacher:
                 user_info = teacher
                 auth_method = 'PIN'
+                print(f"DEBUG: PIN authentication successful for {teacher['name']}")
         
         # Check for RFID authentication (any RFID card)
         elif rfid:
+            print(f"DEBUG: Checking RFID {rfid}")  # Debug print
             # Accept any RFID format (XX:XX:XX:XX)
             if ':' in rfid and len(rfid.split(':')) == 4:
                 user_info = {
@@ -202,8 +210,12 @@ def rfid_authenticate():
                     'pin': rfid
                 }
                 auth_method = 'RFID'
+                print(f"DEBUG: RFID authentication successful for {rfid}")
+            else:
+                print(f"DEBUG: Invalid RFID format: {rfid}")
         
         if user_info:
+            print(f"DEBUG: Setting user session for {user_info['name']}")
             # Set user session
             session['user_logged_in'] = True
             session['user_id'] = user_info['id']
@@ -221,7 +233,7 @@ def rfid_authenticate():
                 client_ip
             )
             
-            return jsonify({
+            response_data = {
                 'success': True,
                 'teacher': {
                     'id': user_info['id'],
@@ -229,8 +241,11 @@ def rfid_authenticate():
                     'role': user_info['role']
                 },
                 'redirect': url_for('index')
-            })
+            }
+            print(f"DEBUG: Returning success response: {response_data}")
+            return jsonify(response_data)
         else:
+            print(f"DEBUG: Authentication failed for RFID: {rfid}")
             # Log failed authentication attempt
             auth_data = rfid if rfid else f'PIN:{pin}'
             log_user_activity(
@@ -241,13 +256,16 @@ def rfid_authenticate():
                 client_ip
             )
             
-            return jsonify({
+            response_data = {
                 'success': False,
                 'error': 'Invalid authentication'
-            }), 401
+            }
+            print(f"DEBUG: Returning failure response: {response_data}")
+            return jsonify(response_data)
             
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Error in rfid_authenticate: {str(e)}")  # Debug print
+        return jsonify({'success': False, 'error': f'Server error: {str(e)}'}), 500
 
 @app.route('/user-logout')
 def user_logout():
