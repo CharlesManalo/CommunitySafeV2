@@ -493,6 +493,108 @@ def delete_feedback(feedback_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/rfid/log-scan', methods=['POST'])
+def log_rfid_scan():
+    """Handle RFID scan logging (for frontend compatibility)"""
+    print(f"DEBUG: log_rfid_scan called with data: {request.json}")  # Debug print
+    try:
+        data = request.json
+        rfid = data.get('rfid')
+        pin = data.get('pin')
+        
+        print(f"DEBUG: Received RFID: {rfid}, PIN: {pin}")  # Debug print
+        
+        # Get client IP for logging
+        client_ip = request.remote_addr
+        user_info = None
+        auth_method = None
+        
+        # Check for PIN authentication (teachers)
+        if pin:
+            print(f"DEBUG: Checking PIN {pin} in database")  # Debug print
+            conn = get_db_connection()
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM teacher_keys WHERE pin = ? AND status = 'active'", (pin,))
+            teacher = cursor.fetchone()
+            conn.close()
+            
+            print(f"DEBUG: Database query result: {teacher}")  # Debug print
+            
+            if teacher:
+                user_info = teacher
+                auth_method = 'PIN'
+                print(f"DEBUG: PIN authentication successful for {teacher['name']}")
+        
+        # Check for RFID authentication (any RFID card)
+        elif rfid:
+            print(f"DEBUG: Checking RFID {rfid}")  # Debug print
+            # Accept any RFID format (XX:XX:XX:XX)
+            if ':' in rfid and len(rfid.split(':')) == 4:
+                user_info = {
+                    'id': 0,  # Special ID for RFID users
+                    'name': f'RFID User ({rfid})',
+                    'role': 'RFID User',
+                    'pin': rfid
+                }
+                auth_method = 'RFID'
+                print(f"DEBUG: RFID authentication successful for {rfid}")
+            else:
+                print(f"DEBUG: Invalid RFID format: {rfid}")
+        
+        if user_info:
+            print(f"DEBUG: Setting user session for {user_info['name']}")
+            # Set user session
+            session['user_logged_in'] = True
+            session['user_id'] = user_info['id']
+            session['user_name'] = user_info['name']
+            session['user_role'] = user_info['role']
+            if auth_method == 'RFID':
+                session['rfid_card'] = user_info['pin']
+            
+            # Log successful authentication
+            log_user_activity(
+                user_info['id'], 
+                user_info['name'], 
+                user_info['role'], 
+                f'LOGIN_SUCCESS_{auth_method}',
+                client_ip
+            )
+            
+            response_data = {
+                'success': True,
+                'teacher': {
+                    'id': user_info['id'],
+                    'name': user_info['name'],
+                    'role': user_info['role']
+                },
+                'redirect': url_for('index')
+            }
+            print(f"DEBUG: Returning success response: {response_data}")
+            return jsonify(response_data)
+        else:
+            print(f"DEBUG: Authentication failed for RFID: {rfid}")
+            # Log failed authentication attempt
+            auth_data = rfid if rfid else f'PIN:{pin}'
+            log_user_activity(
+                0, 
+                'Unknown', 
+                'Unknown', 
+                f'LOGIN_FAILED_{auth_method}:{auth_data}',
+                client_ip
+            )
+            
+            response_data = {
+                'success': False,
+                'error': 'Invalid authentication'
+            }
+            print(f"DEBUG: Returning failure response: {response_data}")
+            return jsonify(response_data)
+            
+    except Exception as e:
+        print(f"Error in log_rfid_scan: {str(e)}")  # Debug print
+        return jsonify({'success': False, 'error': f'Server error: {str(e)}'}), 500
+
 @app.route('/api/upload-map-screenshot', methods=['POST'])
 def upload_map_screenshot():
     try:
