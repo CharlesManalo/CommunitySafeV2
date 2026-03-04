@@ -15,9 +15,10 @@
       <div class="user-info">
         <span class="welcome-message">
           👋 Welcome, {{ session.get('user_name', 'User') }}
-          <span class="user-role"
-            >({{ session.get('user_role', 'Teacher') }})</span
-          >
+          <span class="user-role">
+            {% if session.get('user_role') == 'Student' %} (Student RFID User)
+            {% else %} ({{ session.get('user_role', 'Teacher') }}) {% endif %}
+          </span>
         </span>
         <a href="{{ url_for('user_logout') }}" class="btn btn-secondary btn-sm">
           🚪 Logout

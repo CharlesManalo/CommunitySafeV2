@@ -526,19 +526,19 @@ def log_rfid_scan():
                 auth_method = 'PIN'
                 print(f"DEBUG: PIN authentication successful for {teacher['name']}")
         
-        # Check for RFID authentication (any RFID card)
+        # Check for RFID authentication (students only)
         elif rfid:
             print(f"DEBUG: Checking RFID {rfid}")  # Debug print
             # Accept any RFID format (XX:XX:XX:XX)
             if ':' in rfid and len(rfid.split(':')) == 4:
                 user_info = {
                     'id': 0,  # Special ID for RFID users
-                    'name': f'RFID User ({rfid})',
-                    'role': 'RFID User',
+                    'name': f'Student ({rfid})',  # Changed to Student
+                    'role': 'Student',  # Changed to Student role
                     'pin': rfid
                 }
                 auth_method = 'RFID'
-                print(f"DEBUG: RFID authentication successful for {rfid}")
+                print(f"DEBUG: RFID authentication successful for student {rfid}")
             else:
                 print(f"DEBUG: Invalid RFID format: {rfid}")
         
