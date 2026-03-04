@@ -562,7 +562,7 @@ def log_rfid_scan():
             )
             
             response_data = {
-                'success': True,
+                'valid': True,
                 'teacher': {
                     'id': user_info['id'],
                     'name': user_info['name'],
@@ -585,7 +585,7 @@ def log_rfid_scan():
             )
             
             response_data = {
-                'success': False,
+                'valid': False,
                 'error': 'Invalid authentication'
             }
             print(f"DEBUG: Returning failure response: {response_data}")
@@ -593,7 +593,7 @@ def log_rfid_scan():
             
     except Exception as e:
         print(f"Error in log_rfid_scan: {str(e)}")  # Debug print
-        return jsonify({'success': False, 'error': f'Server error: {str(e)}'}), 500
+        return jsonify({'valid': False, 'error': f'Server error: {str(e)}'}), 500
 
 @app.route('/api/upload-map-screenshot', methods=['POST'])
 def upload_map_screenshot():
