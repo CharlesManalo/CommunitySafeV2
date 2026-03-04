@@ -240,8 +240,23 @@
           const submitBtn = this;
           const statusDiv = document.getElementById("submit-status");
 
-          // Validate all required fields
-          const capturedImage = document.getElementById("captured-image").src;
+          // Check if mobile device
+          const isMobile =
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+              navigator.userAgent,
+            );
+
+          // Get image data (photo capture/upload or regular camera)
+          let capturedImage;
+          if (
+            window.mapLocationManager &&
+            window.mapLocationManager.getPhotoData()
+          ) {
+            capturedImage = window.mapLocationManager.getPhotoData();
+          } else {
+            capturedImage = document.getElementById("captured-image").src;
+          }
+
           const latitudeSpan = document.getElementById("latitude");
           const longitudeSpan = document.getElementById("longitude");
           const locationDetails =
@@ -256,23 +271,35 @@
             latitudeSpan.textContent !== "--" &&
             longitudeSpan.textContent !== "--";
 
-          if (
-            !capturedImage ||
-            !hasCoordinates ||
-            !locationDetails ||
-            !description
-          ) {
-            statusDiv.innerHTML =
-              '<p style="color: #dc3545;">❌ Please complete all required fields: photo, map location, location details, and description</p>';
-            return;
+          // For mobile, only require photo and description (location is auto-detected)
+          if (isMobile) {
+            if (!capturedImage || !description) {
+              statusDiv.innerHTML =
+                '<p style="color: #dc3545;">❌ Please complete all required fields: photo and description</p>';
+              return;
+            }
+          } else {
+            // For desktop, require all fields
+            if (
+              !capturedImage ||
+              !hasCoordinates ||
+              !locationDetails ||
+              !description
+            ) {
+              statusDiv.innerHTML =
+                '<p style="color: #dc3545;">❌ Please complete all required fields: photo, map location, location details, and description</p>';
+              return;
+            }
           }
 
           // Prepare data
           const reportData = {
             before_image: capturedImage,
-            latitude: parseFloat(latitudeSpan.textContent),
-            longitude: parseFloat(longitudeSpan.textContent),
-            description: description + "\n\nLocation: " + locationDetails,
+            latitude: parseFloat(latitudeSpan.textContent) || 0, // Default to 0 for mobile if not set
+            longitude: parseFloat(longitudeSpan.textContent) || 0, // Default to 0 for mobile if not set
+            description:
+              description +
+              (locationDetails ? "\n\nLocation: " + locationDetails : ""),
             map_screenshot_url: window.mapScreenshotUrl || null,
           };
 
